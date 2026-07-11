@@ -1,0 +1,2286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ACTIVAI - Rehabilitation Dashboard</title>
+    
+    <!-- ====== Load Chart.js with defer ====== -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* ============================================
+           CSS VARIABLES - Light & Dark Mode
+           ============================================ */
+        :root {
+            /* Clinical Colors */
+            --clinical-blue: #005EB8;
+            --clinical-teal: #007C91;
+            --clinical-light-blue: #E8F0FE;
+            --clinical-mint: #D4EDDA;
+            --clinical-warm: #FFF3CD;
+            --clinical-rose: #F8D7DA;
+            
+            /* Grays - Light Mode */
+            --gray-50: #F8FAFC;
+            --gray-100: #F1F5F9;
+            --gray-200: #E2E8F0;
+            --gray-300: #CBD5E1;
+            --gray-400: #94A3B8;
+            --gray-500: #64748B;
+            --gray-600: #475569;
+            --gray-700: #334155;
+            --gray-800: #1E293B;
+            --gray-900: #0F172A;
+            
+            /* Status */
+            --success: #0B7C3F;
+            --warning: #B45309;
+            --danger: #B91C1C;
+            --info: #005EB8;
+            
+            /* Surfaces */
+            --card-bg: #FFFFFF;
+            --body-bg: #F1F5F9;
+            --header-bg: #FFFFFF;
+            --border-color: #E2E8F0;
+            --text-primary: #1E293B;
+            --text-secondary: #475569;
+            --text-muted: #94A3B8;
+            
+            /* Shadows */
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.07);
+            --shadow-lg: 0 8px 30px rgba(0,0,0,0.08);
+            
+            /* Transitions */
+            --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-bounce: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        /* ============================================
+           DARK MODE
+           ============================================ */
+        [data-theme="dark"] {
+            --gray-50: #1a1a2e;
+            --gray-100: #16213e;
+            --gray-200: #1a1a2e;
+            --gray-300: #2d2d44;
+            --gray-400: #6b6b8a;
+            --gray-500: #8a8aaa;
+            --gray-600: #aaaac8;
+            --gray-700: #c8c8e0;
+            --gray-800: #e0e0f0;
+            --gray-900: #f0f0ff;
+            
+            --card-bg: #1a1a2e;
+            --body-bg: #0f0f1a;
+            --header-bg: #1a1a2e;
+            --border-color: #2d2d44;
+            --text-primary: #e0e0f0;
+            --text-secondary: #aaaac8;
+            --text-muted: #6b6b8a;
+            
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.4);
+            --shadow-lg: 0 8px 30px rgba(0,0,0,0.5);
+            
+            --clinical-light-blue: #1a2a4a;
+            --clinical-mint: #1a3a2a;
+            --clinical-warm: #3a2a1a;
+            --clinical-rose: #3a1a1a;
+        }
+
+        /* ============================================
+           RESET & BASE
+           ============================================ */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--body-bg);
+            color: var(--text-primary);
+            line-height: 1.6;
+            padding: 24px;
+            min-height: 100vh;
+            transition: var(--transition-smooth);
+        }
+
+        .dashboard {
+            max-width: 1440px;
+            margin: 0 auto;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        /* ============================================
+           ANIMATIONS
+           ============================================ */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes countUp {
+            from { opacity: 0; transform: scale(0.8); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% { box-shadow: 0 0 8px rgba(0, 94, 184, 0.2); }
+            50% { box-shadow: 0 0 20px rgba(0, 94, 184, 0.4); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(-20px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .animate-slide-up {
+            animation: slideUp 0.6s ease-out forwards;
+            opacity: 0;
+        }
+
+        .animate-slide-up:nth-child(1) { animation-delay: 0.05s; }
+        .animate-slide-up:nth-child(2) { animation-delay: 0.1s; }
+        .animate-slide-up:nth-child(3) { animation-delay: 0.15s; }
+        .animate-slide-up:nth-child(4) { animation-delay: 0.2s; }
+
+        /* ============================================
+           HEADER
+           ============================================ */
+        .header {
+            background: var(--header-bg);
+            padding: 20px 32px;
+            border-radius: 16px;
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            border-left: 4px solid var(--clinical-blue);
+            transition: var(--transition-smooth);
+            border: 1px solid var(--border-color);
+        }
+
+        .header:hover {
+            box-shadow: var(--shadow-md);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .header-logo {
+            width: 42px;
+            height: 42px;
+            background: var(--clinical-light-blue);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--clinical-blue);
+            font-size: 20px;
+            transition: var(--transition-smooth);
+        }
+
+        .header-logo:hover {
+            transform: rotate(-8deg) scale(1.05);
+        }
+
+        .header h1 {
+            font-size: 22px;
+            font-weight: 600;
+            color: var(--text-primary);
+            letter-spacing: -0.3px;
+        }
+
+        .header h1 span {
+            color: var(--clinical-blue);
+            font-weight: 700;
+        }
+
+        .header-badge {
+            font-size: 11px;
+            background: var(--clinical-light-blue);
+            color: var(--clinical-blue);
+            padding: 2px 12px;
+            border-radius: 20px;
+            font-weight: 500;
+            letter-spacing: 0.3px;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        /* ============================================
+           THEME TOGGLE
+           ============================================ */
+        .theme-toggle {
+            background: var(--gray-100);
+            border: 1px solid var(--border-color);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            color: var(--text-secondary);
+            font-size: 18px;
+            transition: var(--transition-smooth);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .theme-toggle:hover {
+            background: var(--clinical-blue);
+            color: white;
+            transform: rotate(20deg);
+        }
+
+        /* ============================================
+           BONUS FEATURE BUTTONS
+           ============================================ */
+        .bonus-btn {
+            background: var(--gray-100);
+            border: 1px solid var(--border-color);
+            padding: 8px 16px;
+            border-radius: 30px;
+            cursor: pointer;
+            color: var(--text-secondary);
+            font-size: 13px;
+            font-weight: 500;
+            transition: var(--transition-smooth);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .bonus-btn:hover {
+            background: var(--clinical-blue);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .bonus-btn.active {
+            background: var(--clinical-blue);
+            color: white;
+        }
+
+        .bonus-btn .badge {
+            background: var(--danger);
+            color: white;
+            font-size: 9px;
+            padding: 1px 6px;
+            border-radius: 10px;
+            animation: pulse 2s infinite;
+        }
+
+        .bonus-btn .badge.green {
+            background: var(--success);
+        }
+
+        /* ============================================
+           PATIENT INFO
+           ============================================ */
+        .patient-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: var(--text-secondary);
+            background: var(--gray-50);
+            padding: 6px 16px 6px 12px;
+            border-radius: 30px;
+            transition: var(--transition-smooth);
+            border: 1px solid var(--border-color);
+        }
+
+        .patient-info:hover {
+            background: var(--gray-100);
+        }
+
+        .patient-info .avatar {
+            width: 28px;
+            height: 28px;
+            background: var(--clinical-blue);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .patient-info span {
+            font-weight: 500;
+        }
+
+        .patient-info .patient-id {
+            color: var(--text-muted);
+            font-weight: 400;
+            font-size: 12px;
+        }
+
+        /* ============================================
+           SUMMARY CARDS
+           ============================================ */
+        .summary-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 18px;
+            margin-bottom: 28px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            padding: 20px 24px;
+            border-radius: 14px;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition-smooth);
+            border: 1px solid var(--border-color);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--clinical-blue);
+            opacity: 0;
+            transition: var(--transition-smooth);
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .card:hover::before {
+            opacity: 1;
+        }
+
+        .card .card-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            font-size: 16px;
+            margin-bottom: 10px;
+            transition: var(--transition-smooth);
+        }
+
+        .card:hover .card-icon {
+            transform: scale(1.1);
+        }
+
+        .card .card-icon.blue {
+            background: var(--clinical-light-blue);
+            color: #005EB8;
+        }
+        .card .card-icon.green {
+            background: var(--clinical-mint);
+            color: #0B7C3F;
+        }
+        .card .card-icon.teal {
+            background: #D1F2F5;
+            color: #007C91;
+        }
+        .card .card-icon.purple {
+            background: #EDE7F6;
+            color: #5E35B1;
+        }
+
+        .card h3 {
+            font-size: 13px;
+            color: var(--text-muted);
+            font-weight: 500;
+            letter-spacing: 0.3px;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+
+        .card .card-value {
+            font-size: 30px;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: -0.5px;
+            animation: countUp 0.5s ease-out;
+        }
+
+        .card .card-sub {
+            font-size: 13px;
+            color: var(--text-muted);
+            font-weight: 400;
+            margin-top: 2px;
+        }
+
+        .card .trend {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 12px;
+            font-weight: 500;
+            margin-top: 6px;
+            padding: 2px 10px;
+            border-radius: 20px;
+        }
+
+        .trend.up {
+            color: var(--success);
+            background: var(--clinical-mint);
+        }
+
+        .trend.down {
+            color: var(--danger);
+            background: var(--clinical-rose);
+        }
+
+        /* ============================================
+           SESSIONS LIST
+           ============================================ */
+        .sessions-list {
+            background: var(--card-bg);
+            border-radius: 14px;
+            box-shadow: var(--shadow-sm);
+            padding: 24px 28px;
+            margin-bottom: 28px;
+            border: 1px solid var(--border-color);
+            transition: var(--transition-smooth);
+        }
+
+        .sessions-list:hover {
+            box-shadow: var(--shadow-md);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .section-header h2 {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-header .count-badge {
+            background: var(--gray-100);
+            color: var(--text-secondary);
+            font-size: 12px;
+            font-weight: 500;
+            padding: 2px 12px;
+            border-radius: 20px;
+        }
+
+        .session-item {
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            overflow: hidden;
+            background: var(--card-bg);
+        }
+
+        .session-item:hover {
+            border-color: var(--clinical-blue);
+            box-shadow: 0 2px 8px rgba(0,94,184,0.08);
+        }
+
+        .session-item.comparing {
+            border-color: var(--clinical-blue);
+            background: var(--clinical-light-blue);
+        }
+
+        .session-header {
+            padding: 14px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+            flex-wrap: wrap;
+            gap: 8px;
+            transition: var(--transition-smooth);
+        }
+
+        .session-header .session-date {
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .session-header .session-date .day {
+            color: var(--text-muted);
+            font-weight: 400;
+        }
+
+        .session-header .session-meta {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .session-header .session-meta span {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            color: var(--text-secondary);
+            font-size: 13px;
+        }
+
+        .session-header .progress-badge {
+            padding: 4px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            color: white;
+            transition: var(--transition-smooth);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            letter-spacing: 0.3px;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .session-header .progress-badge:hover {
+            transform: scale(1.08);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+        }
+
+        .compare-checkbox {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: var(--clinical-blue);
+        }
+
+        .expand-btn {
+            background: linear-gradient(135deg, #E8F0FE 0%, #D4E4F7 100%);
+            border: 2px solid var(--clinical-blue);
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            font-size: 14px;
+            cursor: pointer;
+            color: var(--clinical-blue);
+            transition: var(--transition-smooth);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 12px rgba(0, 94, 184, 0.2);
+            animation: pulseGlow 2s ease-in-out infinite;
+        }
+
+        .expand-btn:hover {
+            background: linear-gradient(135deg, var(--clinical-blue) 0%, #003D7A 100%);
+            color: white;
+            transform: scale(1.15);
+            box-shadow: 0 4px 20px rgba(0, 94, 184, 0.4);
+            animation: none;
+        }
+
+        .expand-btn:active {
+            transform: scale(0.92);
+        }
+
+        .expand-btn.active {
+            background: linear-gradient(135deg, var(--clinical-blue) 0%, #003D7A 100%);
+            color: white;
+            transform: rotate(180deg);
+            box-shadow: 0 2px 16px rgba(0, 94, 184, 0.35);
+        }
+
+        .expand-btn.active:hover {
+            transform: rotate(180deg) scale(1.15);
+        }
+
+        .session-details {
+            padding: 0 20px 20px 20px;
+            border-top: 1px solid var(--border-color);
+            animation: slideUp 0.3s ease-out;
+        }
+
+        .exercise-detail {
+            display: flex;
+            gap: 20px;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 14px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .exercise-detail:last-child {
+            border-bottom: none;
+        }
+
+        .exercise-detail .exercise-name {
+            font-weight: 600;
+            min-width: 180px;
+            color: var(--text-primary);
+        }
+
+        .exercise-detail .exercise-stat {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: var(--text-secondary);
+            font-size: 13px;
+        }
+
+        .exercise-detail .exercise-stat .stat-label {
+            color: var(--text-muted);
+            font-weight: 400;
+            font-size: 12px;
+        }
+
+        .exercise-detail .accuracy-high {
+            color: var(--success);
+            font-weight: 600;
+        }
+
+        .exercise-detail .accuracy-low {
+            color: var(--danger);
+            font-weight: 600;
+        }
+
+        .exercise-detail .fatigue-bar {
+            width: 80px;
+            height: 4px;
+            background: var(--gray-200);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .exercise-detail .fatigue-bar .fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.6s ease;
+        }
+
+        .session-meta-footer {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid var(--border-color);
+            font-size: 13px;
+            color: var(--text-secondary);
+            display: flex;
+            gap: 24px;
+            flex-wrap: wrap;
+        }
+
+        /* ============================================
+           SESSION COMPARISON MODAL
+           ============================================ */
+        .comparison-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            padding: 40px;
+            overflow-y: auto;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .comparison-modal.open {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .comparison-content {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 32px;
+            max-width: 900px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+            animation: slideUp 0.3s ease-out;
+        }
+
+        .comparison-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .comparison-header h2 {
+            font-size: 20px;
+            color: var(--text-primary);
+        }
+
+        .comparison-close {
+            background: var(--gray-100);
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            font-size: 18px;
+            cursor: pointer;
+            color: var(--text-secondary);
+            transition: var(--transition-smooth);
+        }
+
+        .comparison-close:hover {
+            background: var(--danger);
+            color: white;
+        }
+
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        .comparison-item {
+            background: var(--gray-50);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid var(--border-color);
+        }
+
+        .comparison-item h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+        }
+
+        .comparison-item .metric {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 14px;
+        }
+
+        .comparison-item .metric:last-child {
+            border-bottom: none;
+        }
+
+        .comparison-item .metric-label {
+            color: var(--text-muted);
+        }
+
+        .comparison-item .metric-value {
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .comparison-item .metric-value.highlight {
+            color: var(--clinical-blue);
+            font-weight: 600;
+        }
+
+        /* ============================================
+           REAL-TIME SIMULATION INDICATOR
+           ============================================ */
+        .live-indicator {
+            display: none;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--success);
+            padding: 4px 12px;
+            border-radius: 20px;
+            background: var(--clinical-mint);
+        }
+
+        .live-indicator.active {
+            display: flex;
+        }
+
+        .live-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--success);
+            animation: pulse 1s infinite;
+        }
+
+        /* ============================================
+           CHARTS
+           ============================================ */
+        .visualizations {
+            margin-bottom: 28px;
+        }
+
+        .chart-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: 20px;
+        }
+
+        .chart-card {
+            background: var(--card-bg);
+            border-radius: 14px;
+            box-shadow: var(--shadow-sm);
+            padding: 20px 22px;
+            border: 1px solid var(--border-color);
+            transition: var(--transition-smooth);
+        }
+
+        .chart-card:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+
+        .chart-card h3 {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 14px;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .chart-card canvas {
+            max-height: 200px;
+            width: 100% !important;
+        }
+
+        /* ============================================
+           RECOMMENDATIONS
+           ============================================ */
+        .recommendations {
+            background: var(--card-bg);
+            border-radius: 14px;
+            box-shadow: var(--shadow-sm);
+            padding: 24px 28px;
+            margin-bottom: 28px;
+            border: 1px solid var(--border-color);
+            transition: var(--transition-smooth);
+        }
+
+        .recommendations:hover {
+            box-shadow: var(--shadow-md);
+        }
+
+        .rec-item {
+            padding: 16px 20px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            border-left: 4px solid var(--clinical-blue);
+            background: var(--gray-50);
+            transition: var(--transition-smooth);
+            animation: slideUp 0.4s ease-out;
+        }
+
+        .rec-item:hover {
+            transform: translateX(6px);
+            background: var(--gray-100);
+        }
+
+        .rec-item.priority-high {
+            border-left-color: var(--danger);
+            background: var(--clinical-rose);
+        }
+
+        .rec-item.priority-medium {
+            border-left-color: var(--warning);
+            background: var(--clinical-warm);
+        }
+
+        .rec-item.priority-low {
+            border-left-color: var(--success);
+            background: var(--clinical-mint);
+        }
+
+        .rec-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 6px;
+            flex-wrap: wrap;
+        }
+
+        .rec-header .rec-icon {
+            font-size: 18px;
+        }
+
+        .rec-header h4 {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .priority-badge {
+            font-size: 10px;
+            padding: 2px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .priority-badge.high {
+            background: #FECACA;
+            color: #991B1B;
+        }
+        .priority-badge.medium {
+            background: #FDE68A;
+            color: #92400E;
+        }
+        .priority-badge.low {
+            background: #A7F3D0;
+            color: #065F46;
+        }
+
+        .rec-item p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+            margin-left: 34px;
+        }
+
+        /* ============================================
+           FOOTER
+           ============================================ */
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: var(--text-muted);
+            font-size: 13px;
+            border-top: 1px solid var(--border-color);
+            margin-top: 8px;
+        }
+
+        .footer .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            margin-top: 6px;
+        }
+
+        .footer .footer-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 12px;
+            transition: var(--transition-smooth);
+        }
+
+        .footer .footer-links a:hover {
+            color: var(--clinical-blue);
+        }
+
+        /* ============================================
+           LOADING
+           ============================================ */
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-muted);
+        }
+
+        .loading i {
+            font-size: 32px;
+            margin-bottom: 12px;
+            display: block;
+            color: var(--clinical-blue);
+        }
+
+        /* ============================================
+           RESPONSIVE
+           ============================================ */
+        @media (max-width: 768px) {
+            body { padding: 16px; }
+
+            .header {
+                padding: 16px 20px;
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .header-left { width: 100%; justify-content: center; }
+            .header-actions { width: 100%; justify-content: center; }
+
+            .header h1 { font-size: 18px; }
+
+            .patient-info { 
+                width: 100%; 
+                justify-content: center;
+                padding: 4px 12px;
+            }
+
+            .summary-cards {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 12px;
+            }
+
+            .card { padding: 16px 18px; }
+            .card .card-value { font-size: 24px; }
+
+            .chart-grid { grid-template-columns: 1fr; }
+
+            .sessions-list { padding: 16px; }
+            .session-header { font-size: 13px; padding: 12px 16px; }
+
+            .recommendations { padding: 16px; }
+            .rec-item { padding: 14px 16px; }
+            .rec-item p { margin-left: 0; }
+
+            .exercise-detail { gap: 8px; }
+            .exercise-detail .exercise-name { min-width: 120px; }
+            
+            .session-header .session-meta { gap: 8px; }
+            .expand-btn {
+                width: 30px;
+                height: 30px;
+                font-size: 12px;
+            }
+
+            .comparison-modal { padding: 16px; }
+            .comparison-content { padding: 20px; }
+            .comparison-grid { grid-template-columns: 1fr; }
+
+            .bonus-btn span { display: none; }
+            .bonus-btn { padding: 8px 12px; }
+        }
+
+        @media (max-width: 480px) {
+            .summary-cards { grid-template-columns: 1fr; }
+            .session-header .session-meta { gap: 6px; }
+            .exercise-detail .exercise-stat { font-size: 12px; }
+            .exercise-detail .exercise-name { min-width: 100px; }
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <div class="dashboard">
+            <!-- ============ HEADER ============ -->
+            <header class="header">
+                <div class="header-left">
+                    <div class="header-logo">
+                        <i class="fas fa-heart-pulse"></i>
+                    </div>
+                    <div>
+                        <h1>ACTIVAI <span>Rehabilitation</span></h1>
+                        <span class="header-badge">Clinical Dashboard v3.0</span>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <!-- Live Indicator -->
+                    <div class="live-indicator" id="liveIndicator">
+                        <span class="live-dot"></span>
+                        <span>LIVE</span>
+                    </div>
+
+                    <!-- Bonus Feature Buttons -->
+                    <button class="bonus-btn" id="simulateBtn" title="Real-time Simulation">
+                        <i class="fas fa-play"></i>
+                        <span>Simulate</span>
+                    </button>
+                    <button class="bonus-btn" id="compareBtn" title="Compare Sessions">
+                        <i class="fas fa-arrows-left-right"></i>
+                        <span>Compare</span>
+                        <span class="badge" id="compareCount">0</span>
+                    </button>
+                    <button class="bonus-btn" id="exportBtn" title="Export PDF">
+                        <i class="fas fa-file-pdf"></i>
+                        <span>Export</span>
+                    </button>
+                    
+                    <!-- Theme Toggle -->
+                    <button class="theme-toggle" id="themeToggle" title="Toggle Theme">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                </div>
+                <div class="patient-info">
+                    <div class="avatar">P</div>
+                    <span id="patientInfo">Loading...</span>
+                    <span class="patient-id" id="patientId">· RYO-2027-001</span>
+                </div>
+            </header>
+
+            <!-- ============ SUMMARY CARDS ============ -->
+            <section class="summary-cards">
+                <div class="card animate-slide-up">
+                    <div class="card-icon blue"><i class="fas fa-calendar-check"></i></div>
+                    <h3>Total Sessions</h3>
+                    <div class="card-value" id="totalSessions">—</div>
+                    <div class="card-sub">Completed sessions</div>
+                </div>
+                <div class="card animate-slide-up">
+                    <div class="card-icon green"><i class="fas fa-bullseye"></i></div>
+                    <h3>Average Accuracy</h3>
+                    <div class="card-value" id="avgAccuracy">—</div>
+                    <div class="card-sub">Overall performance</div>
+                </div>
+                <div class="card animate-slide-up">
+                    <div class="card-icon teal"><i class="fas fa-arrow-trend-up"></i></div>
+                    <h3>Current Progress</h3>
+                    <div class="card-value" id="currentProgress">—</div>
+                    <div class="card-sub" id="progressSub">Tracking improvement</div>
+                </div>
+                <div class="card animate-slide-up">
+                    <div class="card-icon purple"><i class="fas fa-wave-square"></i></div>
+                    <h3>EMG Quality</h3>
+                    <div class="card-value" id="emgQuality">—</div>
+                    <div class="card-sub">Signal clarity</div>
+                </div>
+            </section>
+
+            <!-- ============ SESSION HISTORY ============ -->
+            <section class="sessions-list">
+                <div class="section-header">
+                    <h2>
+                        <i class="fas fa-list-ul" style="color: var(--clinical-blue);"></i>
+                        Session History
+                        <span class="count-badge" id="sessionCount">0 sessions</span>
+                    </h2>
+                    <div style="font-size:13px; color: var(--text-muted);">
+                        <i class="fas fa-check-square"></i> Select 2 sessions to compare
+                    </div>
+                </div>
+                <div id="sessionsContainer">
+                    <div class="loading">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        Loading sessions...
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============ CHARTS ============ -->
+            <section class="visualizations">
+                <div class="section-header">
+                    <h2 style="margin-bottom: 18px;">
+                        <i class="fas fa-chart-simple" style="color: var(--clinical-blue);"></i>
+                        Progress Analytics
+                    </h2>
+                </div>
+                <div class="chart-grid">
+                    <div class="chart-card">
+                        <h3><span style="color: var(--clinical-blue);">📈</span> Accuracy Over Time</h3>
+                        <canvas id="progressChart"></canvas>
+                    </div>
+                    <div class="chart-card">
+                        <h3><span style="color: var(--clinical-teal);">📊</span> Exercise Performance</h3>
+                        <canvas id="exerciseChart"></canvas>
+                    </div>
+                    <div class="chart-card">
+                        <h3><span style="color: #5E35B1;">⚡</span> Fatigue Analysis</h3>
+                        <canvas id="fatigueChart"></canvas>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============ RECOMMENDATIONS ============ -->
+            <section class="recommendations">
+                <div class="section-header">
+                    <h2>
+                        <i class="fas fa-brain" style="color: var(--clinical-blue);"></i>
+                        AI Recommendations
+                        <span class="count-badge">Prioritized</span>
+                    </h2>
+                </div>
+                <div id="recommendationsContainer">
+                    <div class="loading">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        Generating recommendations...
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============ FOOTER ============ -->
+            <footer class="footer">
+                <p>Kawatek Co., Ltd. © 2026 — ACTIVAI Rehabilitation Platform</p>
+                <div class="footer-links">
+                    <a href="#">Clinical Guidelines</a>
+                    <a href="#">Patient Privacy</a>
+                    <a href="#">Support</a>
+                </div>
+            </footer>
+        </div>
+    </div>
+
+    <!-- ============ COMPARISON MODAL ============ -->
+    <div class="comparison-modal" id="comparisonModal">
+        <div class="comparison-content">
+            <div class="comparison-header">
+                <h2><i class="fas fa-arrows-left-right" style="color: var(--clinical-blue);"></i> Session Comparison</h2>
+                <button class="comparison-close" id="comparisonClose">✕</button>
+            </div>
+            <div id="comparisonBody">
+                <p style="text-align: center; color: var(--text-muted);">Select 2 sessions from the list above to compare.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================
+        // CONFIGURATION
+        // ============================================
+        const CONFIG = {
+            ACCURACY: {
+                LOW_THRESHOLD: 55,
+                MEDIUM_THRESHOLD: 70,
+                HIGH_THRESHOLD: 80,
+                EXCELLENT_THRESHOLD: 85,
+            },
+            FATIGUE: {
+                HIGH_THRESHOLD: 0.7,
+                MEDIUM_THRESHOLD: 0.6,
+            },
+            EMG: {
+                POOR_THRESHOLD: 0.6,
+            },
+            SESSION: {
+                MIN_DURATION: 25,
+                DURATION_GAP: 10,
+                TREND_WINDOW: 3,
+            },
+            RECOMMENDATIONS: {
+                MAX_COUNT: 6,
+            },
+            CHART: {
+                COLORS: ['#005EB8', '#007C91', '#5E35B1', '#0B7C3F', '#B45309'],
+                FATIGUE_COLORS: ['#D32F2F', '#1976D2', '#388E3C', '#F57C00', '#7B1FA2'],
+                FATIGUE_BORDER_WIDTH: 3,
+                FATIGUE_POINT_RADIUS: 5,
+            }
+        };
+
+        // ============================================
+        // DOM CACHE
+        // ============================================
+        const DOM = {
+            elements: {},
+            get(id) {
+                if (!this.elements[id]) {
+                    this.elements[id] = document.getElementById(id);
+                }
+                return this.elements[id];
+            },
+            setText(id, text) {
+                const el = this.get(id);
+                if (el) el.textContent = text;
+            },
+            setHTML(id, html) {
+                const el = this.get(id);
+                if (el) el.innerHTML = html;
+            },
+            getValue(id) {
+                const el = this.get(id);
+                return el ? el.textContent : '';
+            }
+        };
+
+        // ============================================
+        // DATA PROCESSOR
+        // ============================================
+        class DataProcessor {
+            constructor(rawData) {
+                this.raw = rawData;
+                this.sessions = rawData.sessions || [];
+                this.allExercises = this.sessions.flatMap(s => s.exercises || []);
+                this.summary = this._calculateSummary();
+                this.exercisePerformance = this._calculateExercisePerformance();
+                this.trends = this._calculateTrends();
+                this.fatigueData = this._calculateFatigueData();
+                this.processed = true;
+            }
+            
+            _calculateSummary() {
+                const sessions = this.sessions;
+                const allExercises = this.allExercises;
+                let totalAccuracy = 0;
+                allExercises.forEach(e => totalAccuracy += (e.accuracy_percent || 0));
+                const totalSessions = sessions.length;
+                const totalExercises = allExercises.length;
+                return {
+                    totalSessions,
+                    totalExercises,
+                    avgAccuracy: totalExercises > 0 ? totalAccuracy / totalExercises : 0,
+                    latestSession: sessions[sessions.length - 1] || null,
+                    firstSession: sessions[0] || null,
+                    latestProgress: sessions[sessions.length - 1]?.overall_progress_percent || 0,
+                    latestEMG: sessions[sessions.length - 1]?.emg_quality_score || 0,
+                    firstProgress: sessions[0]?.overall_progress_percent || 0,
+                };
+            }
+            
+            _calculateExercisePerformance() {
+                const map = {};
+                this.allExercises.forEach(e => {
+                    const name = e.name || 'Unknown';
+                    if (!map[name]) map[name] = { total: 0, count: 0, fatigue: 0 };
+                    map[name].total += (e.accuracy_percent || 0);
+                    map[name].count += 1;
+                    map[name].fatigue += (e.fatigue_index || 0);
+                });
+                return map;
+            }
+            
+            _calculateTrends() {
+                const sessions = this.sessions;
+                const windowSize = CONFIG.SESSION.TREND_WINDOW;
+                const lastN = sessions.slice(-windowSize);
+                const accuracyTrend = lastN.map(s => {
+                    const exercises = s.exercises || [];
+                    if (exercises.length === 0) return 0;
+                    return exercises.reduce((sum, e) => sum + (e.accuracy_percent || 0), 0) / exercises.length;
+                });
+                return { accuracyTrend, lastNSessions: lastN, windowSize };
+            }
+            
+            _calculateFatigueData() {
+                const exerciseNames = Object.keys(this.exercisePerformance);
+                const dates = this.sessions.map(s => s.date || '');
+                const fatigueData = exerciseNames.map(name => {
+                    return this.sessions.map(session => {
+                        const exercise = (session.exercises || []).find(e => e.name === name);
+                        return exercise ? exercise.fatigue_index : null;
+                    }).filter(v => v !== null);
+                });
+                return { exerciseNames, dates, fatigueData };
+            }
+            
+            getSessionAccuracies() {
+                return this.sessions.map(s => {
+                    const exercises = s.exercises || [];
+                    if (exercises.length === 0) return 0;
+                    return exercises.reduce((sum, e) => sum + (e.accuracy_percent || 0), 0) / exercises.length;
+                });
+            }
+            
+            getSessionDates() {
+                return this.sessions.map(s => {
+                    const d = new Date(s.date);
+                    return d.toLocaleString('default', { month: 'short', day: 'numeric' });
+                });
+            }
+            
+            getExerciseNames() {
+                return Object.keys(this.exercisePerformance);
+            }
+            
+            getExerciseAverages() {
+                return this.getExerciseNames().map(name => {
+                    const stats = this.exercisePerformance[name];
+                    return stats.total / stats.count;
+                });
+            }
+        }
+
+        // ============================================
+        // RECOMMENDATION ENGINE
+        // ============================================
+        class RecommendationEngine {
+            constructor() {
+                this.cache = null;
+                this.cacheKey = null;
+            }
+            
+            generate(data) {
+                const key = this._getCacheKey(data);
+                if (this.cache && this.cacheKey === key) return this.cache;
+                
+                const recommendations = [];
+                const processor = data.processed ? data : new DataProcessor(data);
+                const sessions = processor.sessions;
+                const latestSession = processor.summary.latestSession;
+                
+                // RULE 1: Accuracy Trend Analysis
+                const trend = processor.trends.accuracyTrend;
+                if (trend.length >= CONFIG.SESSION.TREND_WINDOW) {
+                    const improving = trend[trend.length - 1] > trend[trend.length - 2];
+                    const avgLast3 = trend.reduce((a, b) => a + b, 0) / trend.length;
+                    if (!improving && avgLast3 < CONFIG.ACCURACY.MEDIUM_THRESHOLD) {
+                        recommendations.push({
+                            title: 'Increase Training Frequency',
+                            description: `Accuracy plateaued at ${Math.round(avgLast3)}% over the last 3 sessions. Consider increasing session frequency or adding short daily practice sessions.`,
+                            priority: 'high',
+                            icon: '📈'
+                        });
+                    }
+                }
+                
+                // RULE 2: Exercise-Specific Performance
+                for (const [name, stats] of Object.entries(processor.exercisePerformance)) {
+                    const avg = stats.total / stats.count;
+                    const avgFatigue = stats.fatigue / stats.count;
+                    
+                    if (avg > CONFIG.ACCURACY.HIGH_THRESHOLD && avg < 92) {
+                        recommendations.push({
+                            title: `Advanced ${name}`,
+                            description: `You've achieved ${Math.round(avg)}% accuracy in ${name}. Try increasing repetitions or adding resistance bands to challenge your neuromuscular control further.`,
+                            priority: 'medium',
+                            icon: '💪'
+                        });
+                    } else if (avg < CONFIG.ACCURACY.LOW_THRESHOLD) {
+                        recommendations.push({
+                            title: `Focus on ${name} Fundamentals`,
+                            description: `Accuracy is ${Math.round(avg)}% in ${name}. Consider practicing slower, more deliberate movements and using visual feedback to improve precision.`,
+                            priority: 'high',
+                            icon: '🎯'
+                        });
+                    }
+                    
+                    if (avgFatigue > CONFIG.FATIGUE.HIGH_THRESHOLD) {
+                        recommendations.push({
+                            title: `Reduce Fatigue in ${name}`,
+                            description: `Fatigue index is ${(avgFatigue * 100).toFixed(0)}% for ${name}. Consider shorter sets with more rest between repetitions.`,
+                            priority: 'medium',
+                            icon: '😌'
+                        });
+                    }
+                }
+                
+                // RULE 3: Latest Session Performance
+                if (latestSession) {
+                    const latestExercises = latestSession.exercises || [];
+                    if (latestExercises.length > 0) {
+                        const latestAvgAccuracy = latestExercises.reduce((sum, e) => sum + (e.accuracy_percent || 0), 0) / latestExercises.length;
+                        const latestAvgFatigue = latestExercises.reduce((sum, e) => sum + (e.fatigue_index || 0), 0) / latestExercises.length;
+                        
+                        if (latestAvgAccuracy > CONFIG.ACCURACY.EXCELLENT_THRESHOLD) {
+                            recommendations.push({
+                                title: 'Excellent Performance!',
+                                description: `You achieved ${Math.round(latestAvgAccuracy)}% average accuracy in your latest session. Great progress! Let's introduce more challenging exercise variations.`,
+                                priority: 'low',
+                                icon: '🏆'
+                            });
+                        }
+                        
+                        if (latestAvgFatigue > CONFIG.FATIGUE.MEDIUM_THRESHOLD) {
+                            recommendations.push({
+                                title: 'Recovery Focus',
+                                description: `Fatigue levels are elevated (${(latestAvgFatigue * 100).toFixed(0)}%). Schedule adequate rest between sessions to prevent overtraining and ensure optimal recovery.`,
+                                priority: 'medium',
+                                icon: '🧘'
+                            });
+                        }
+                    }
+                }
+                
+                // RULE 4: EMG Quality Check
+                if (latestSession && latestSession.emg_quality_score < CONFIG.EMG.POOR_THRESHOLD) {
+                    recommendations.push({
+                        title: 'Check Sensor Placement',
+                        description: `EMG signal quality is ${Math.round(latestSession.emg_quality_score * 100)}%. Ensure sensors are properly placed with good skin contact and consider using electrode gel.`,
+                        priority: 'high',
+                        icon: '📡'
+                    });
+                }
+                
+                // RULE 5: Overall Progress Tracking
+                const firstProgress = processor.summary.firstProgress;
+                const lastProgress = processor.summary.latestProgress;
+                const improvement = lastProgress - firstProgress;
+                if (improvement > 0 && improvement < 15) {
+                    recommendations.push({
+                        title: 'Steady Progress',
+                        description: `You've improved ${Math.round(improvement)}% since your first session. Consistent effort is paying off. Keep up the momentum!`,
+                        priority: 'low',
+                        icon: '🌟'
+                    });
+                }
+                
+                // RULE 6: Session Consistency Check
+                if (sessions.length >= 3) {
+                    const avgDuration = sessions.reduce((sum, s) => sum + (s.duration_minutes || 0), 0) / sessions.length;
+                    const latestDuration = latestSession?.duration_minutes || 0;
+                    const durationGap = latestDuration - avgDuration;
+                    if (durationGap < -CONFIG.SESSION.DURATION_GAP && latestDuration < CONFIG.SESSION.MIN_DURATION) {
+                        recommendations.push({
+                            title: 'Increase Session Duration',
+                            description: `Your latest session was ${latestDuration}min, below your average of ${Math.round(avgDuration)}min. Longer sessions allow more comprehensive exercise coverage.`,
+                            priority: 'medium',
+                            icon: '⏱️'
+                        });
+                    }
+                }
+                
+                const priorityOrder = { high: 0, medium: 1, low: 2 };
+                recommendations.sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]);
+                
+                this.cache = recommendations.slice(0, CONFIG.RECOMMENDATIONS.MAX_COUNT);
+                this.cacheKey = key;
+                return this.cache;
+            }
+            
+            _getCacheKey(data) {
+                const sessions = data.sessions || [];
+                return sessions.length + '_' + (sessions[0]?.date || '') + '_' + (sessions[sessions.length - 1]?.date || '');
+            }
+        }
+
+        // ============================================
+        // UI RENDERER
+        // ============================================
+        class UIRenderer {
+            constructor() {
+                this.recommendationEngine = new RecommendationEngine();
+                this.charts = [];
+                this.resizeTimeout = null;
+                this.selectedSessions = [];
+            }
+            
+            renderAll(data) {
+                const processor = new DataProcessor(data);
+                this.processor = processor;
+                this.renderSummary(processor);
+                this.renderSessions(processor);
+                this.renderCharts(processor);
+                this.renderRecommendations(processor);
+                this.updateCompareCount();
+            }
+            
+            renderSummary(processor) {
+                const summary = processor.summary;
+                const improvement = summary.latestProgress - summary.firstProgress;
+                
+                DOM.setText('patientInfo', `${processor.raw.patient.name} · ${processor.raw.patient.device}`);
+                DOM.setText('patientId', `· ${processor.raw.patient.id}`);
+                DOM.setText('totalSessions', summary.totalSessions);
+                DOM.setText('avgAccuracy', `${Math.round(summary.avgAccuracy)}%`);
+                DOM.setText('currentProgress', `${Math.round(summary.latestProgress)}%`);
+                DOM.setText('emgQuality', `${Math.round(summary.latestEMG * 100)}%`);
+                
+                const progressSub = DOM.get('progressSub');
+                if (improvement > 0) {
+                    progressSub.innerHTML = `<span class="trend up">↑ ${Math.round(improvement)}% from first session</span>`;
+                } else {
+                    progressSub.textContent = 'Tracking improvement';
+                }
+                DOM.setText('sessionCount', `${summary.totalSessions} sessions`);
+            }
+            
+            renderSessions(processor) {
+                const container = DOM.get('sessionsContainer');
+                const fragment = document.createDocumentFragment();
+                
+                processor.sessions.forEach((session, index) => {
+                    const exercises = session.exercises || [];
+                    const avgAccuracy = exercises.length > 0 ? 
+                        exercises.reduce((sum, e) => sum + (e.accuracy_percent || 0), 0) / exercises.length : 0;
+                    
+                    const progressColor = session.overall_progress_percent > 60 ? '#0B7C3F' : 
+                                          session.overall_progress_percent > 30 ? '#B45309' : '#B91C1C';
+                    
+                    const dateObj = new Date(session.date);
+                    const month = dateObj.toLocaleString('default', { month: 'short' });
+                    const day = dateObj.getDate();
+                    
+                    const isSelected = this.selectedSessions.includes(index);
+                    
+                    const div = document.createElement('div');
+                    div.className = `session-item ${isSelected ? 'comparing' : ''}`;
+                    div.setAttribute('data-index', index);
+                    
+                    let headerHTML = `
+                        <div class="session-header">
+                            <span class="session-date">
+                                ${month} ${day}
+                                <span class="day">· Session ${session.session_id}</span>
+                            </span>
+                            <div class="session-meta">
+                                <span><i class="far fa-clock"></i> Duration: ${session.duration_minutes}m</span>
+                                <span><i class="fas fa-crosshairs"></i> Accuracy: ${Math.round(avgAccuracy)}%</span>
+                                <span class="progress-badge" style="background: ${progressColor};">
+                                    Progress: ${Math.round(session.overall_progress_percent)}%
+                                </span>
+                                <input type="checkbox" class="compare-checkbox" data-index="${index}" ${isSelected ? 'checked' : ''}>
+                                <button class="expand-btn" id="expandBtn${index}">
+                                    <i class="fas fa-chevron-down"></i>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    
+                    let detailsHTML = `<div class="session-details" id="sessionDetails${index}" style="display:none;">`;
+                    exercises.forEach(exercise => {
+                        const accClass = exercise.accuracy_percent > 70 ? 'accuracy-high' : 'accuracy-low';
+                        const fatiguePercent = (exercise.fatigue_index * 100).toFixed(0);
+                        const fatigueColor = exercise.fatigue_index > 0.6 ? '#B91C1C' : 
+                                             exercise.fatigue_index > 0.3 ? '#B45309' : '#0B7C3F';
+                        
+                        detailsHTML += `
+                            <div class="exercise-detail">
+                                <span class="exercise-name">${exercise.name}</span>
+                                <span class="exercise-stat"><i class="fas fa-repeat"></i><span class="stat-label">Reps:</span> ${exercise.repetitions}</span>
+                                <span class="exercise-stat ${accClass}"><i class="fas fa-bullseye"></i><span class="stat-label">Accuracy:</span> ${exercise.accuracy_percent}%</span>
+                                <span class="exercise-stat"><i class="fas fa-gauge-high"></i><span class="stat-label">Response:</span> ${exercise.avg_response_time_ms}ms</span>
+                                <span class="exercise-stat"><i class="fas fa-bolt"></i><span class="stat-label">Fatigue:</span> ${fatiguePercent}%
+                                    <span class="fatigue-bar"><span class="fill" style="width: ${fatiguePercent}%; background: ${fatigueColor};"></span></span>
+                                </span>
+                            </div>
+                        `;
+                    });
+                    detailsHTML += `
+                            <div class="session-meta-footer">
+                                <span><i class="fas fa-wave-square"></i> EMG Quality: ${Math.round(session.emg_quality_score * 100)}%</span>
+                                <span><i class="fas fa-arrow-trend-up"></i> Overall Progress: ${Math.round(session.overall_progress_percent)}%</span>
+                            </div>
+                        </div>
+                    `;
+                    
+                    div.innerHTML = headerHTML + detailsHTML;
+                    
+                    // Add event listeners
+                    const checkbox = div.querySelector('.compare-checkbox');
+                    checkbox.addEventListener('change', (e) => {
+                        e.stopPropagation();
+                        this.toggleSelection(index, checkbox.checked);
+                    });
+                    
+                    const expandBtn = div.querySelector('.expand-btn');
+                    expandBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        this.toggleSession(index);
+                    });
+                    
+                    div.addEventListener('click', () => {
+                        this.toggleSession(index);
+                    });
+                    
+                    fragment.appendChild(div);
+                });
+                
+                container.innerHTML = '';
+                container.appendChild(fragment);
+            }
+            
+            toggleSession(index) {
+                const details = DOM.get(`sessionDetails${index}`);
+                const btn = DOM.get(`expandBtn${index}`);
+                if (!details || !btn) return;
+                
+                if (details.style.display === 'none') {
+                    details.style.display = 'block';
+                    btn.classList.add('active');
+                    btn.innerHTML = '<i class="fas fa-chevron-up"></i>';
+                } else {
+                    details.style.display = 'none';
+                    btn.classList.remove('active');
+                    btn.innerHTML = '<i class="fas fa-chevron-down"></i>';
+                }
+            }
+            
+            toggleSelection(index, checked) {
+                if (checked) {
+                    if (this.selectedSessions.length >= 2) {
+                        const first = this.selectedSessions[0];
+                        this.selectedSessions = [first, index];
+                    } else {
+                        this.selectedSessions.push(index);
+                    }
+                } else {
+                    this.selectedSessions = this.selectedSessions.filter(i => i !== index);
+                }
+                this.updateCompareCount();
+                this.renderSessions(this.processor);
+            }
+            
+            updateCompareCount() {
+                const count = this.selectedSessions.length;
+                const badge = DOM.get('compareCount');
+                if (badge) badge.textContent = count;
+                const btn = DOM.get('compareBtn');
+                if (count === 2) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            }
+            
+            renderCharts(processor) {
+                this.charts.forEach(chart => chart.destroy());
+                this.charts = [];
+                
+                if (!processor.sessions || processor.sessions.length === 0) {
+                    console.warn('No session data for charts');
+                    return;
+                }
+                
+                const dates = processor.getSessionDates();
+                const accuracies = processor.getSessionAccuracies();
+                const exerciseNames = processor.getExerciseNames();
+                const exerciseAverages = processor.getExerciseAverages();
+                const colors = CONFIG.CHART.COLORS;
+                const fatigueColors = CONFIG.CHART.FATIGUE_COLORS;
+                
+                // 1. Progress Chart
+                this.charts.push(new Chart(DOM.get('progressChart'), {
+                    type: 'line',
+                    data: {
+                        labels: dates,
+                        datasets: [{
+                            label: 'Average Accuracy (%)',
+                            data: accuracies,
+                            borderColor: colors[0],
+                            backgroundColor: 'rgba(0, 94, 184, 0.08)',
+                            tension: 0.3,
+                            fill: true,
+                            pointBackgroundColor: colors[0],
+                            pointBorderColor: '#FFFFFF',
+                            pointBorderWidth: 2,
+                            pointRadius: 5,
+                            pointHoverRadius: 7,
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: { 
+                            legend: { 
+                                position: 'top',
+                                labels: { usePointStyle: true, padding: 20 }
+                            } 
+                        },
+                        scales: { 
+                            y: { 
+                                min: 0, 
+                                max: 100, 
+                                title: { display: true, text: 'Accuracy %', font: { size: 12 } },
+                                grid: { color: 'rgba(0,0,0,0.04)' }
+                            },
+                            x: { grid: { display: false } }
+                        }
+                    }
+                }));
+                
+                // 2. Exercise Breakdown Chart
+                this.charts.push(new Chart(DOM.get('exerciseChart'), {
+                    type: 'bar',
+                    data: {
+                        labels: exerciseNames,
+                        datasets: [{
+                            label: 'Average Accuracy (%)',
+                            data: exerciseAverages,
+                            backgroundColor: colors.slice(0, exerciseNames.length),
+                            borderRadius: 6,
+                            maxBarThickness: 40,
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: { legend: { display: false } },
+                        scales: { 
+                            y: { 
+                                min: 0, 
+                                max: 100, 
+                                title: { display: true, text: 'Accuracy %', font: { size: 12 } },
+                                grid: { color: 'rgba(0,0,0,0.04)' }
+                            },
+                            x: { grid: { display: false } }
+                        }
+                    }
+                }));
+                
+                // 3. Fatigue Chart
+                if (exerciseNames.length > 0) {
+                    const fatigueData = exerciseNames.map(name => {
+                        return processor.sessions.map(session => {
+                            const exercise = (session.exercises || []).find(e => e.name === name);
+                            return exercise ? exercise.fatigue_index : null;
+                        }).filter(v => v !== null);
+                    });
+                    
+                    const colorMap = {};
+                    exerciseNames.forEach((name, i) => {
+                        colorMap[name] = fatigueColors[i % fatigueColors.length];
+                    });
+                    
+                    this.charts.push(new Chart(DOM.get('fatigueChart'), {
+                        type: 'line',
+                        data: {
+                            labels: dates,
+                            datasets: exerciseNames.map((name, i) => {
+                                const data = fatigueData[i] || [];
+                                return {
+                                    label: name,
+                                    data: data,
+                                    borderColor: colorMap[name],
+                                    backgroundColor: colorMap[name] + '20',
+                                    borderWidth: CONFIG.CHART.FATIGUE_BORDER_WIDTH,
+                                    pointBackgroundColor: colorMap[name],
+                                    pointBorderColor: '#FFFFFF',
+                                    pointBorderWidth: 2,
+                                    pointRadius: CONFIG.CHART.FATIGUE_POINT_RADIUS,
+                                    pointHoverRadius: 8,
+                                    tension: 0.3,
+                                    fill: false,
+                                    borderDash: i % 2 === 0 ? [] : [6, 4],
+                                };
+                            })
+                        },
+                        options: {
+                            responsive: true,
+                            plugins: { 
+                                legend: { 
+                                    position: 'top',
+                                    labels: { 
+                                        usePointStyle: true, 
+                                        padding: 16, 
+                                        font: { size: 11, weight: '600' },
+                                        boxWidth: 14,
+                                    } 
+                                },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function(context) {
+                                            return context.dataset.label + ': ' + context.parsed.y.toFixed(2);
+                                        }
+                                    }
+                                }
+                            },
+                            scales: { 
+                                y: { 
+                                    min: 0, 
+                                    max: 1,
+                                    title: { display: true, text: 'Fatigue Index (0-1)', font: { size: 12, weight: '600' } },
+                                    grid: { color: 'rgba(0,0,0,0.06)' },
+                                    ticks: { 
+                                        stepSize: 0.1,
+                                        callback: function(value) {
+                                            return value.toFixed(1);
+                                        }
+                                    }
+                                },
+                                x: { 
+                                    grid: { display: false },
+                                    ticks: { font: { size: 10 } }
+                                }
+                            },
+                            elements: {
+                                line: {
+                                    borderWidth: CONFIG.CHART.FATIGUE_BORDER_WIDTH,
+                                }
+                            }
+                        }
+                    }));
+                }
+            }
+            
+            renderRecommendations(processor) {
+                const recommendations = this.recommendationEngine.generate(processor.raw);
+                const container = DOM.get('recommendationsContainer');
+                
+                if (recommendations.length === 0) {
+                    container.innerHTML = '<p style="text-align: center; color: var(--text-muted);">No recommendations available at this time.</p>';
+                    return;
+                }
+                
+                const fragment = document.createDocumentFragment();
+                recommendations.forEach((rec, i) => {
+                    const div = document.createElement('div');
+                    div.className = `rec-item priority-${rec.priority}`;
+                    div.style.animationDelay = `${i * 0.08}s`;
+                    div.innerHTML = `
+                        <div class="rec-header">
+                            <span class="rec-icon">${rec.icon || '💡'}</span>
+                            <h4>${rec.title}</h4>
+                            <span class="priority-badge ${rec.priority}">${rec.priority}</span>
+                        </div>
+                        <p>${rec.description}</p>
+                    `;
+                    fragment.appendChild(div);
+                });
+                container.innerHTML = '';
+                container.appendChild(fragment);
+            }
+            
+            // ============================================
+            // SESSION COMPARISON
+            // ============================================
+            showComparison() {
+                const modal = DOM.get('comparisonModal');
+                const body = DOM.get('comparisonBody');
+                
+                if (this.selectedSessions.length !== 2) {
+                    body.innerHTML = '<p style="text-align: center; color: var(--text-muted);">Please select exactly 2 sessions to compare.</p>';
+                    modal.classList.add('open');
+                    return;
+                }
+                
+                const s1 = this.processor.sessions[this.selectedSessions[0]];
+                const s2 = this.processor.sessions[this.selectedSessions[1]];
+                
+                const getSessionData = (session) => {
+                    const exercises = session.exercises || [];
+                    const avgAcc = exercises.length > 0 ? 
+                        exercises.reduce((sum, e) => sum + (e.accuracy_percent || 0), 0) / exercises.length : 0;
+                    const avgFatigue = exercises.length > 0 ?
+                        exercises.reduce((sum, e) => sum + (e.fatigue_index || 0), 0) / exercises.length : 0;
+                    return { avgAcc, avgFatigue, exercises };
+                };
+                
+                const d1 = getSessionData(s1);
+                const d2 = getSessionData(s2);
+                
+                body.innerHTML = `
+                    <div class="comparison-grid">
+                        <div class="comparison-item">
+                            <h3>Session ${s1.session_id} · ${s1.date}</h3>
+                            <div class="metric">
+                                <span class="metric-label">Duration</span>
+                                <span class="metric-value">${s1.duration_minutes} min</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-label">Accuracy</span>
+                                <span class="metric-value highlight">${Math.round(d1.avgAcc)}%</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-label">Fatigue</span>
+                                <span class="metric-value">${(d1.avgFatigue * 100).toFixed(0)}%</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-label">EMG Quality</span>
+                                <span class="metric-value">${Math.round(s1.emg_quality_score * 100)}%</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-label">Progress</span>
+                                <span class="metric-value">${Math.round(s1.overall_progress_percent)}%</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-label">Exercises</span>
+                                <span class="metric-value">${d1.exercises.length}</span>
+                            </div>
+                        </div>
+                        <div class="comparison-item">
+                            <h3>Session ${s2.session_id} · ${s2.date}</h3>
+                            <div class="metric">
+                                <span class="metric-label">Duration</span>
+                                <span class="metric-value">${s2.duration_minutes} min</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-label">Accuracy</span>
+                                <span class="metric-value highlight">${Math.round(d2.avgAcc)}%</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-label">Fatigue</span>
+                                <span class="metric-value">${(d2.avgFatigue * 100).toFixed(0)}%</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-label">EMG Quality</span>
+                                <span class="metric-value">${Math.round(s2.emg_quality_score * 100)}%</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-label">Progress</span>
+                                <span class="metric-value">${Math.round(s2.overall_progress_percent)}%</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-label">Exercises</span>
+                                <span class="metric-value">${d2.exercises.length}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="text-align: center; margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border-color);">
+                        <span style="font-size: 14px; color: var(--text-muted);">
+                            ${d1.avgAcc > d2.avgAcc ? '📈 Session 1 had higher accuracy' : d1.avgAcc < d2.avgAcc ? '📈 Session 2 had higher accuracy' : '📊 Both sessions had similar accuracy'}
+                        </span>
+                    </div>
+                `;
+                
+                modal.classList.add('open');
+            }
+            
+            // ============================================
+            // EXPORT PDF
+            // ============================================
+            async exportPDF() {
+                const btn = DOM.get('exportBtn');
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Exporting...';
+                btn.disabled = true;
+                
+                try {
+                    const dashboard = document.querySelector('.dashboard');
+                    const canvas = await html2canvas(dashboard, {
+                        scale: 2,
+                        backgroundColor: '#FFFFFF',
+                        useCORS: true,
+                        logging: false,
+                    });
+                    
+                    const imgData = canvas.toDataURL('image/png');
+                    const { jsPDF } = window.jspdf;
+                    const pdf = new jsPDF('p', 'mm', 'a4');
+                    const pdfWidth = pdf.internal.pageSize.getWidth();
+                    const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+                    
+                    pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+                    pdf.save('ACTIVAI_Rehabilitation_Report.pdf');
+                    
+                } catch (error) {
+                    console.error('Export failed:', error);
+                    alert('Failed to export PDF. Please try again.');
+                }
+                
+                btn.innerHTML = '<i class="fas fa-file-pdf"></i> Export';
+                btn.disabled = false;
+            }
+            
+            // ============================================
+            // REAL-TIME SIMULATION
+            // ============================================
+            startSimulation() {
+                const btn = DOM.get('simulateBtn');
+                const indicator = DOM.get('liveIndicator');
+                const isRunning = btn.classList.contains('active');
+                
+                if (isRunning) {
+                    btn.classList.remove('active');
+                    btn.innerHTML = '<i class="fas fa-play"></i> Simulate';
+                    indicator.classList.remove('active');
+                    if (this.simulationInterval) {
+                        clearInterval(this.simulationInterval);
+                        this.simulationInterval = null;
+                    }
+                    return;
+                }
+                
+                btn.classList.add('active');
+                btn.innerHTML = '<i class="fas fa-stop"></i> Stop';
+                indicator.classList.add('active');
+                
+                let counter = 0;
+                const originalData = this.processor.raw;
+                
+                this.simulationInterval = setInterval(() => {
+                    counter++;
+                    const newSession = {
+                        session_id: originalData.sessions.length + counter,
+                        date: new Date().toISOString().split('T')[0],
+                        duration_minutes: 25 + Math.floor(Math.random() * 20),
+                        emg_quality_score: 0.7 + Math.random() * 0.25,
+                        overall_progress_percent: Math.min(100, 50 + counter * 2 + Math.random() * 5),
+                        exercises: [
+                            {
+                                name: 'Power Grip Training',
+                                repetitions: 15 + Math.floor(Math.random() * 10),
+                                accuracy_percent: 70 + Math.random() * 20,
+                                avg_response_time_ms: 250 + Math.random() * 100,
+                                fatigue_index: 0.2 + Math.random() * 0.4
+                            },
+                            {
+                                name: 'Pinch Control',
+                                repetitions: 12 + Math.floor(Math.random() * 8),
+                                accuracy_percent: 65 + Math.random() * 20,
+                                avg_response_time_ms: 300 + Math.random() * 150,
+                                fatigue_index: 0.3 + Math.random() * 0.4
+                            },
+                            {
+                                name: 'Lateral Grip',
+                                repetitions: 10 + Math.floor(Math.random() * 8),
+                                accuracy_percent: 60 + Math.random() * 20,
+                                avg_response_time_ms: 350 + Math.random() * 150,
+                                fatigue_index: 0.3 + Math.random() * 0.4
+                            }
+                        ]
+                    };
+                    
+                    const updatedData = JSON.parse(JSON.stringify(originalData));
+                    updatedData.sessions.push(newSession);
+                    
+                    this.renderAll(updatedData);
+                    
+                    // Auto-scroll to show new session
+                    const container = DOM.get('sessionsContainer');
+                    if (container.firstChild) {
+                        container.firstChild.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                    
+                }, 3000);
+            }
+            
+            destroy() {
+                this.charts.forEach(chart => chart.destroy());
+                this.charts = [];
+                if (this.resizeTimeout) {
+                    clearTimeout(this.resizeTimeout);
+                    this.resizeTimeout = null;
+                }
+                if (this.simulationInterval) {
+                    clearInterval(this.simulationInterval);
+                    this.simulationInterval = null;
+                }
+            }
+        }
+
+        // ============================================
+        // GLOBAL FUNCTIONS
+        // ============================================
+        function toggleSession(index) {
+            if (window.__app) {
+                window.__app.renderer.toggleSession(index);
+            }
+        }
+
+        // ============================================
+        // DATA LOADER
+        // ============================================
+        async function loadData() {
+            try {
+                const response = await fetch('data/patient_sessions.json');
+                if (!response.ok) throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                const data = await response.json();
+                return data;
+            } catch (error) {
+                console.error('Error loading data:', error);
+                DOM.setHTML('sessionsContainer', 
+                    '<p style="color: #B91C1C; text-align: center; padding: 20px;">⚠️ Error loading patient data. Please check the file path.</p>');
+                return null;
+            }
+        }
+
+        // ============================================
+        // MAIN APPLICATION
+        // ============================================
+        class App {
+            constructor() {
+                this.renderer = new UIRenderer();
+                this.initialized = false;
+                this.theme = 'light';
+                this.loadTheme();
+            }
+            
+            loadTheme() {
+                const saved = localStorage.getItem('activai-theme');
+                if (saved) {
+                    this.theme = saved;
+                    document.documentElement.setAttribute('data-theme', saved);
+                    this.updateThemeIcon();
+                }
+            }
+            
+            toggleTheme() {
+                this.theme = this.theme === 'light' ? 'dark' : 'light';
+                document.documentElement.setAttribute('data-theme', this.theme);
+                localStorage.setItem('activai-theme', this.theme);
+                this.updateThemeIcon();
+            }
+            
+            updateThemeIcon() {
+                const btn = DOM.get('themeToggle');
+                if (btn) {
+                    btn.innerHTML = this.theme === 'light' ? '<i class="fas fa-moon"></i>' : '<i class="fas fa-sun"></i>';
+                }
+            }
+            
+            async init() {
+                if (this.initialized) return;
+                
+                const data = await loadData();
+                if (data) {
+                    this.renderer.renderAll(data);
+                    this.initialized = true;
+                    
+                    // Setup event listeners
+                    this.setupEventListeners();
+                }
+            }
+            
+            setupEventListeners() {
+                // Theme toggle
+                DOM.get('themeToggle').addEventListener('click', () => this.toggleTheme());
+                
+                // Comparison
+                DOM.get('compareBtn').addEventListener('click', () => {
+                    this.renderer.showComparison();
+                });
+                
+                DOM.get('comparisonClose').addEventListener('click', () => {
+                    DOM.get('comparisonModal').classList.remove('open');
+                });
+                
+                DOM.get('comparisonModal').addEventListener('click', (e) => {
+                    if (e.target === DOM.get('comparisonModal')) {
+                        DOM.get('comparisonModal').classList.remove('open');
+                    }
+                });
+                
+                // Export PDF
+                DOM.get('exportBtn').addEventListener('click', () => {
+                    this.renderer.exportPDF();
+                });
+                
+                // Simulation
+                DOM.get('simulateBtn').addEventListener('click', () => {
+                    this.renderer.startSimulation();
+                });
+            }
+            
+            destroy() {
+                this.renderer.destroy();
+                this.initialized = false;
+            }
+            
+            handleResize() {
+                if (this.renderer.resizeTimeout) {
+                    clearTimeout(this.renderer.resizeTimeout);
+                }
+                this.renderer.resizeTimeout = setTimeout(() => {
+                    this.renderer.resizeTimeout = null;
+                }, 250);
+            }
+        }
+
+        // ============================================
+        // BOOTSTRAP
+        // ============================================
+        const app = new App();
+        window.__app = app;
+
+        document.addEventListener('DOMContentLoaded', () => app.init());
+
+        let resizeTimer;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(() => app.handleResize(), 250);
+        });
+
+        window.addEventListener('beforeunload', () => app.destroy());
+    </script>
+</body>
+</html>

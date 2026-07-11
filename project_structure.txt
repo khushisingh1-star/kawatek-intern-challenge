@@ -1,0 +1,25 @@
+.
+├── README.md
+├── challenges
+│   ├── README.md
+│   ├── challenge-a
+│   │   ├── README.md
+│   │   ├── SOLUTION.md
+│   │   ├── data
+│   │   │   ├── emg_signals.csv
+│   │   │   └── test_signals.csv
+│   │   ├── requirements.txt
+│   │   └── src
+│   │       └── placeholder.py
+│   └── challenge-b
+│       ├── README.md
+│       ├── SOLUTION.md
+│       ├── data
+│       │   └── patient_sessions.json
+│       ├── design
+│       │   └── wireframe.md
+│       └── src
+│           └── placeholder.html
+└── project_structure.txt
+
+9 directories, 14 files
