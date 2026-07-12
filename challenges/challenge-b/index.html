@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ACTIVAI - Rehabilitation Dashboard</title>
     
-    <!-- ====== Load Chart.js with defer ====== -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" defer></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
@@ -13,11 +12,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <style>
-        /* ============================================
-           CSS VARIABLES - Light & Dark Mode
-           ============================================ */
         :root {
-            /* Clinical Colors */
             --clinical-blue: #005EB8;
             --clinical-teal: #007C91;
             --clinical-light-blue: #E8F0FE;
@@ -25,7 +20,6 @@
             --clinical-warm: #FFF3CD;
             --clinical-rose: #F8D7DA;
             
-            /* Grays - Light Mode */
             --gray-50: #F8FAFC;
             --gray-100: #F1F5F9;
             --gray-200: #E2E8F0;
@@ -37,13 +31,11 @@
             --gray-800: #1E293B;
             --gray-900: #0F172A;
             
-            /* Status */
             --success: #0B7C3F;
             --warning: #B45309;
             --danger: #B91C1C;
             --info: #005EB8;
             
-            /* Surfaces */
             --card-bg: #FFFFFF;
             --body-bg: #F1F5F9;
             --header-bg: #FFFFFF;
@@ -52,19 +44,14 @@
             --text-secondary: #475569;
             --text-muted: #94A3B8;
             
-            /* Shadows */
             --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
             --shadow-md: 0 4px 12px rgba(0,0,0,0.07);
             --shadow-lg: 0 8px 30px rgba(0,0,0,0.08);
             
-            /* Transitions */
             --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             --transition-bounce: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
-        /* ============================================
-           DARK MODE
-           ============================================ */
         [data-theme="dark"] {
             --gray-50: #1a1a2e;
             --gray-100: #16213e;
@@ -95,14 +82,7 @@
             --clinical-rose: #3a1a1a;
         }
 
-        /* ============================================
-           RESET & BASE
-           ============================================ */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -120,9 +100,6 @@
             animation: fadeIn 0.8s ease-out;
         }
 
-        /* ============================================
-           ANIMATIONS
-           ============================================ */
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
@@ -143,16 +120,6 @@
             50% { box-shadow: 0 0 20px rgba(0, 94, 184, 0.4); }
         }
 
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-
-        @keyframes slideIn {
-            from { transform: translateX(-20px); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-
         .animate-slide-up {
             animation: slideUp 0.6s ease-out forwards;
             opacity: 0;
@@ -163,9 +130,6 @@
         .animate-slide-up:nth-child(3) { animation-delay: 0.15s; }
         .animate-slide-up:nth-child(4) { animation-delay: 0.2s; }
 
-        /* ============================================
-           HEADER
-           ============================================ */
         .header {
             background: var(--header-bg);
             padding: 20px 32px;
@@ -182,9 +146,7 @@
             border: 1px solid var(--border-color);
         }
 
-        .header:hover {
-            box-shadow: var(--shadow-md);
-        }
+        .header:hover { box-shadow: var(--shadow-md); }
 
         .header-left {
             display: flex;
@@ -205,9 +167,7 @@
             transition: var(--transition-smooth);
         }
 
-        .header-logo:hover {
-            transform: rotate(-8deg) scale(1.05);
-        }
+        .header-logo:hover { transform: rotate(-8deg) scale(1.05); }
 
         .header h1 {
             font-size: 22px;
@@ -238,9 +198,6 @@
             flex-wrap: wrap;
         }
 
-        /* ============================================
-           THEME TOGGLE
-           ============================================ */
         .theme-toggle {
             background: var(--gray-100);
             border: 1px solid var(--border-color);
@@ -262,9 +219,6 @@
             transform: rotate(20deg);
         }
 
-        /* ============================================
-           BONUS FEATURE BUTTONS
-           ============================================ */
         .bonus-btn {
             background: var(--gray-100);
             border: 1px solid var(--border-color);
@@ -293,22 +247,6 @@
             color: white;
         }
 
-        .bonus-btn .badge {
-            background: var(--danger);
-            color: white;
-            font-size: 9px;
-            padding: 1px 6px;
-            border-radius: 10px;
-            animation: pulse 2s infinite;
-        }
-
-        .bonus-btn .badge.green {
-            background: var(--success);
-        }
-
-        /* ============================================
-           PATIENT INFO
-           ============================================ */
         .patient-info {
             display: flex;
             align-items: center;
@@ -322,9 +260,7 @@
             border: 1px solid var(--border-color);
         }
 
-        .patient-info:hover {
-            background: var(--gray-100);
-        }
+        .patient-info:hover { background: var(--gray-100); }
 
         .patient-info .avatar {
             width: 28px;
@@ -339,19 +275,13 @@
             font-weight: 600;
         }
 
-        .patient-info span {
-            font-weight: 500;
-        }
-
+        .patient-info span { font-weight: 500; }
         .patient-info .patient-id {
             color: var(--text-muted);
             font-weight: 400;
             font-size: 12px;
         }
 
-        /* ============================================
-           SUMMARY CARDS
-           ============================================ */
         .summary-cards {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -387,9 +317,7 @@
             box-shadow: var(--shadow-md);
         }
 
-        .card:hover::before {
-            opacity: 1;
-        }
+        .card:hover::before { opacity: 1; }
 
         .card .card-icon {
             display: inline-flex;
@@ -403,9 +331,7 @@
             transition: var(--transition-smooth);
         }
 
-        .card:hover .card-icon {
-            transform: scale(1.1);
-        }
+        .card:hover .card-icon { transform: scale(1.1); }
 
         .card .card-icon.blue {
             background: var(--clinical-light-blue);
@@ -469,9 +395,6 @@
             background: var(--clinical-rose);
         }
 
-        /* ============================================
-           SESSIONS LIST
-           ============================================ */
         .sessions-list {
             background: var(--card-bg);
             border-radius: 14px;
@@ -482,9 +405,7 @@
             transition: var(--transition-smooth);
         }
 
-        .sessions-list:hover {
-            box-shadow: var(--shadow-md);
-        }
+        .sessions-list:hover { box-shadow: var(--shadow-md); }
 
         .section-header {
             display: flex;
@@ -526,11 +447,6 @@
         .session-item:hover {
             border-color: var(--clinical-blue);
             box-shadow: 0 2px 8px rgba(0,94,184,0.08);
-        }
-
-        .session-item.comparing {
-            border-color: var(--clinical-blue);
-            background: var(--clinical-light-blue);
         }
 
         .session-header {
@@ -586,13 +502,6 @@
             box-shadow: 0 4px 16px rgba(0,0,0,0.25);
         }
 
-        .compare-checkbox {
-            width: 18px;
-            height: 18px;
-            cursor: pointer;
-            accent-color: var(--clinical-blue);
-        }
-
         .expand-btn {
             background: linear-gradient(135deg, #E8F0FE 0%, #D4E4F7 100%);
             border: 2px solid var(--clinical-blue);
@@ -618,9 +527,7 @@
             animation: none;
         }
 
-        .expand-btn:active {
-            transform: scale(0.92);
-        }
+        .expand-btn:active { transform: scale(0.92); }
 
         .expand-btn.active {
             background: linear-gradient(135deg, var(--clinical-blue) 0%, #003D7A 100%);
@@ -629,9 +536,7 @@
             box-shadow: 0 2px 16px rgba(0, 94, 184, 0.35);
         }
 
-        .expand-btn.active:hover {
-            transform: rotate(180deg) scale(1.15);
-        }
+        .expand-btn.active:hover { transform: rotate(180deg) scale(1.15); }
 
         .session-details {
             padding: 0 20px 20px 20px;
@@ -649,9 +554,7 @@
             align-items: center;
         }
 
-        .exercise-detail:last-child {
-            border-bottom: none;
-        }
+        .exercise-detail:last-child { border-bottom: none; }
 
         .exercise-detail .exercise-name {
             font-weight: 600;
@@ -708,9 +611,6 @@
             flex-wrap: wrap;
         }
 
-        /* ============================================
-           SESSION COMPARISON MODAL
-           ============================================ */
         .comparison-modal {
             display: none;
             position: fixed;
@@ -774,6 +674,134 @@
             color: white;
         }
 
+        .comparison-session-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin: 16px 0;
+        }
+
+        .comparison-session-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 14px 18px;
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            background: var(--gray-50);
+        }
+
+        .comparison-session-item:hover {
+            border-color: var(--clinical-blue);
+            background: var(--clinical-light-blue);
+        }
+
+        .comparison-session-item.selected {
+            border-color: var(--clinical-blue);
+            background: var(--clinical-light-blue);
+            box-shadow: 0 0 0 3px rgba(0, 94, 184, 0.2);
+        }
+
+        .comparison-session-item .session-info {
+            flex: 1;
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .comparison-session-item .session-info span {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .comparison-session-item .session-info .label {
+            color: var(--text-muted);
+            font-weight: 400;
+        }
+
+        .comparison-session-item .session-info .value {
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .comparison-session-item .check-mark {
+            display: none;
+            color: var(--clinical-blue);
+            font-size: 20px;
+        }
+
+        .comparison-session-item.selected .check-mark { display: block; }
+
+        .comparison-session-item .session-number {
+            font-weight: 600;
+            color: var(--clinical-blue);
+            min-width: 30px;
+        }
+
+        .comparison-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .comparison-actions .btn-primary {
+            background: var(--clinical-blue);
+            color: white;
+            border: none;
+            padding: 10px 28px;
+            border-radius: 30px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            font-family: 'Inter', sans-serif;
+        }
+
+        .comparison-actions .btn-primary:hover {
+            background: #003D7A;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .comparison-actions .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .comparison-actions .btn-secondary {
+            background: var(--gray-100);
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            font-family: 'Inter', sans-serif;
+        }
+
+        .comparison-actions .btn-secondary:hover {
+            background: var(--gray-200);
+        }
+
+        .comparison-result {
+            display: none;
+            animation: slideUp 0.4s ease-out;
+        }
+
+        .comparison-result.active { display: block; }
+
+        .comparison-select-view { display: block; }
+        .comparison-select-view.hidden { display: none; }
+
+        /* Comparison Result Grid */
         .comparison-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -802,54 +830,75 @@
             font-size: 14px;
         }
 
-        .comparison-item .metric:last-child {
-            border-bottom: none;
-        }
-
-        .comparison-item .metric-label {
-            color: var(--text-muted);
-        }
-
+        .comparison-item .metric:last-child { border-bottom: none; }
+        .comparison-item .metric-label { color: var(--text-muted); }
         .comparison-item .metric-value {
             color: var(--text-primary);
             font-weight: 500;
         }
-
         .comparison-item .metric-value.highlight {
             color: var(--clinical-blue);
             font-weight: 600;
         }
 
-        /* ============================================
-           REAL-TIME SIMULATION INDICATOR
-           ============================================ */
-        .live-indicator {
-            display: none;
+        /* Conclusion Box */
+        .comparison-conclusion {
+            margin-top: 24px;
+            padding: 20px 24px;
+            background: var(--clinical-light-blue);
+            border-radius: 12px;
+            border-left: 4px solid var(--clinical-blue);
+        }
+
+        .comparison-conclusion h4 {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 10px;
+            display: flex;
             align-items: center;
             gap: 8px;
-            font-size: 13px;
-            font-weight: 500;
-            color: var(--success);
-            padding: 4px 12px;
-            border-radius: 20px;
-            background: var(--clinical-mint);
         }
 
-        .live-indicator.active {
+        .comparison-conclusion ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .comparison-conclusion ul li {
+            padding: 6px 0;
+            font-size: 14px;
+            color: var(--text-secondary);
             display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
         }
 
-        .live-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: var(--success);
-            animation: pulse 1s infinite;
+        .comparison-conclusion ul li:last-child { border-bottom: none; }
+
+        .comparison-conclusion ul li .bullet {
+            color: var(--clinical-blue);
+            font-weight: 600;
+            min-width: 20px;
         }
 
-        /* ============================================
-           CHARTS
-           ============================================ */
+        .comparison-conclusion ul li .highlight-green {
+            color: var(--success);
+            font-weight: 600;
+        }
+
+        .comparison-conclusion ul li .highlight-red {
+            color: var(--danger);
+            font-weight: 600;
+        }
+
+        .comparison-conclusion ul li .highlight-blue {
+            color: var(--clinical-blue);
+            font-weight: 600;
+        }
+
         .visualizations {
             margin-bottom: 28px;
         }
@@ -889,9 +938,7 @@
             width: 100% !important;
         }
 
-        /* ============================================
-           RECOMMENDATIONS
-           ============================================ */
+        /* AI Recommendations */
         .recommendations {
             background: var(--card-bg);
             border-radius: 14px;
@@ -902,9 +949,7 @@
             transition: var(--transition-smooth);
         }
 
-        .recommendations:hover {
-            box-shadow: var(--shadow-md);
-        }
+        .recommendations:hover { box-shadow: var(--shadow-md); }
 
         .rec-item {
             padding: 16px 20px;
@@ -944,10 +989,7 @@
             flex-wrap: wrap;
         }
 
-        .rec-header .rec-icon {
-            font-size: 18px;
-        }
-
+        .rec-header .rec-icon { font-size: 18px; }
         .rec-header h4 {
             font-size: 15px;
             font-weight: 600;
@@ -983,9 +1025,6 @@
             margin-left: 34px;
         }
 
-        /* ============================================
-           FOOTER
-           ============================================ */
         .footer {
             text-align: center;
             padding: 20px;
@@ -1009,13 +1048,8 @@
             transition: var(--transition-smooth);
         }
 
-        .footer .footer-links a:hover {
-            color: var(--clinical-blue);
-        }
+        .footer .footer-links a:hover { color: var(--clinical-blue); }
 
-        /* ============================================
-           LOADING
-           ============================================ */
         .loading {
             text-align: center;
             padding: 40px;
@@ -1029,9 +1063,6 @@
             color: var(--clinical-blue);
         }
 
-        /* ============================================
-           RESPONSIVE
-           ============================================ */
         @media (max-width: 768px) {
             body { padding: 16px; }
 
@@ -1043,7 +1074,6 @@
 
             .header-left { width: 100%; justify-content: center; }
             .header-actions { width: 100%; justify-content: center; }
-
             .header h1 { font-size: 18px; }
 
             .patient-info { 
@@ -1061,17 +1091,13 @@
             .card .card-value { font-size: 24px; }
 
             .chart-grid { grid-template-columns: 1fr; }
-
             .sessions-list { padding: 16px; }
             .session-header { font-size: 13px; padding: 12px 16px; }
-
             .recommendations { padding: 16px; }
             .rec-item { padding: 14px 16px; }
             .rec-item p { margin-left: 0; }
-
             .exercise-detail { gap: 8px; }
             .exercise-detail .exercise-name { min-width: 120px; }
-            
             .session-header .session-meta { gap: 8px; }
             .expand-btn {
                 width: 30px;
@@ -1082,6 +1108,7 @@
             .comparison-modal { padding: 16px; }
             .comparison-content { padding: 20px; }
             .comparison-grid { grid-template-columns: 1fr; }
+            .comparison-session-item { flex-wrap: wrap; }
 
             .bonus-btn span { display: none; }
             .bonus-btn { padding: 8px 12px; }
@@ -1098,7 +1125,6 @@
 <body>
     <div id="app">
         <div class="dashboard">
-            <!-- ============ HEADER ============ -->
             <header class="header">
                 <div class="header-left">
                     <div class="header-logo">
@@ -1110,28 +1136,14 @@
                     </div>
                 </div>
                 <div class="header-actions">
-                    <!-- Live Indicator -->
-                    <div class="live-indicator" id="liveIndicator">
-                        <span class="live-dot"></span>
-                        <span>LIVE</span>
-                    </div>
-
-                    <!-- Bonus Feature Buttons -->
-                    <button class="bonus-btn" id="simulateBtn" title="Real-time Simulation">
-                        <i class="fas fa-play"></i>
-                        <span>Simulate</span>
-                    </button>
                     <button class="bonus-btn" id="compareBtn" title="Compare Sessions">
                         <i class="fas fa-arrows-left-right"></i>
                         <span>Compare</span>
-                        <span class="badge" id="compareCount">0</span>
                     </button>
                     <button class="bonus-btn" id="exportBtn" title="Export PDF">
                         <i class="fas fa-file-pdf"></i>
                         <span>Export</span>
                     </button>
-                    
-                    <!-- Theme Toggle -->
                     <button class="theme-toggle" id="themeToggle" title="Toggle Theme">
                         <i class="fas fa-moon"></i>
                     </button>
@@ -1143,7 +1155,6 @@
                 </div>
             </header>
 
-            <!-- ============ SUMMARY CARDS ============ -->
             <section class="summary-cards">
                 <div class="card animate-slide-up">
                     <div class="card-icon blue"><i class="fas fa-calendar-check"></i></div>
@@ -1171,7 +1182,6 @@
                 </div>
             </section>
 
-            <!-- ============ SESSION HISTORY ============ -->
             <section class="sessions-list">
                 <div class="section-header">
                     <h2>
@@ -1179,9 +1189,6 @@
                         Session History
                         <span class="count-badge" id="sessionCount">0 sessions</span>
                     </h2>
-                    <div style="font-size:13px; color: var(--text-muted);">
-                        <i class="fas fa-check-square"></i> Select 2 sessions to compare
-                    </div>
                 </div>
                 <div id="sessionsContainer">
                     <div class="loading">
@@ -1191,7 +1198,6 @@
                 </div>
             </section>
 
-            <!-- ============ CHARTS ============ -->
             <section class="visualizations">
                 <div class="section-header">
                     <h2 style="margin-bottom: 18px;">
@@ -1215,7 +1221,6 @@
                 </div>
             </section>
 
-            <!-- ============ RECOMMENDATIONS ============ -->
             <section class="recommendations">
                 <div class="section-header">
                     <h2>
@@ -1232,7 +1237,6 @@
                 </div>
             </section>
 
-            <!-- ============ FOOTER ============ -->
             <footer class="footer">
                 <p>Kawatek Co., Ltd. © 2026 — ACTIVAI Rehabilitation Platform</p>
                 <div class="footer-links">
@@ -1244,15 +1248,34 @@
         </div>
     </div>
 
-    <!-- ============ COMPARISON MODAL ============ -->
     <div class="comparison-modal" id="comparisonModal">
         <div class="comparison-content">
             <div class="comparison-header">
-                <h2><i class="fas fa-arrows-left-right" style="color: var(--clinical-blue);"></i> Session Comparison</h2>
+                <h2><i class="fas fa-arrows-left-right" style="color: var(--clinical-blue);"></i> Compare Sessions</h2>
                 <button class="comparison-close" id="comparisonClose">✕</button>
             </div>
-            <div id="comparisonBody">
-                <p style="text-align: center; color: var(--text-muted);">Select 2 sessions from the list above to compare.</p>
+            
+            <div class="comparison-select-view" id="comparisonSelectView">
+                <p style="color: var(--text-muted); margin-bottom: 16px;">
+                    <i class="fas fa-info-circle"></i> Select <strong>2 sessions</strong> to compare side by side:
+                </p>
+                <div class="comparison-session-list" id="comparisonSessionList"></div>
+                <div class="comparison-actions">
+                    <button class="btn-secondary" id="comparisonCancel">Cancel</button>
+                    <button class="btn-primary" id="comparisonCompareBtn" disabled>
+                        <i class="fas fa-arrows-left-right"></i> Start Comparing
+                    </button>
+                </div>
+            </div>
+
+            <div class="comparison-result" id="comparisonResult">
+                <div id="comparisonBody"></div>
+                <div class="comparison-actions">
+                    <button class="btn-secondary" id="comparisonBackBtn">
+                        <i class="fas fa-arrow-left"></i> Back to Selection
+                    </button>
+                    <button class="btn-secondary" id="comparisonCloseResult">Close</button>
+                </div>
             </div>
         </div>
     </div>
@@ -1279,6 +1302,8 @@
                 MIN_DURATION: 25,
                 DURATION_GAP: 10,
                 TREND_WINDOW: 3,
+                MAX_DAYS_GAP: 5,
+                CONSECUTIVE_IMPROVEMENTS: 3,
             },
             RECOMMENDATIONS: {
                 MAX_COUNT: 6,
@@ -1309,10 +1334,6 @@
             setHTML(id, html) {
                 const el = this.get(id);
                 if (el) el.innerHTML = html;
-            },
-            getValue(id) {
-                const el = this.get(id);
-                return el ? el.textContent : '';
             }
         };
 
@@ -1327,7 +1348,6 @@
                 this.summary = this._calculateSummary();
                 this.exercisePerformance = this._calculateExercisePerformance();
                 this.trends = this._calculateTrends();
-                this.fatigueData = this._calculateFatigueData();
                 this.processed = true;
             }
             
@@ -1371,27 +1391,44 @@
                     if (exercises.length === 0) return 0;
                     return exercises.reduce((sum, e) => sum + (e.accuracy_percent || 0), 0) / exercises.length;
                 });
-                return { accuracyTrend, lastNSessions: lastN, windowSize };
+                
+                let consecutiveImprovements = 0;
+                for (let i = sessions.length - 1; i > 0; i--) {
+                    const current = this._getSessionAccuracy(sessions[i]);
+                    const prev = this._getSessionAccuracy(sessions[i - 1]);
+                    if (current > prev) {
+                        consecutiveImprovements++;
+                    } else {
+                        break;
+                    }
+                }
+                
+                const gaps = [];
+                for (let i = 1; i < sessions.length; i++) {
+                    const d1 = new Date(sessions[i - 1].date);
+                    const d2 = new Date(sessions[i].date);
+                    const days = Math.round((d2 - d1) / (1000 * 60 * 60 * 24));
+                    gaps.push(days);
+                }
+                
+                return {
+                    accuracyTrend,
+                    lastNSessions: lastN,
+                    windowSize,
+                    consecutiveImprovements,
+                    sessionGaps: gaps,
+                    lastGap: gaps.length > 0 ? gaps[gaps.length - 1] : 0,
+                };
             }
             
-            _calculateFatigueData() {
-                const exerciseNames = Object.keys(this.exercisePerformance);
-                const dates = this.sessions.map(s => s.date || '');
-                const fatigueData = exerciseNames.map(name => {
-                    return this.sessions.map(session => {
-                        const exercise = (session.exercises || []).find(e => e.name === name);
-                        return exercise ? exercise.fatigue_index : null;
-                    }).filter(v => v !== null);
-                });
-                return { exerciseNames, dates, fatigueData };
+            _getSessionAccuracy(session) {
+                const exercises = session.exercises || [];
+                if (exercises.length === 0) return 0;
+                return exercises.reduce((sum, e) => sum + (e.accuracy_percent || 0), 0) / exercises.length;
             }
             
             getSessionAccuracies() {
-                return this.sessions.map(s => {
-                    const exercises = s.exercises || [];
-                    if (exercises.length === 0) return 0;
-                    return exercises.reduce((sum, e) => sum + (e.accuracy_percent || 0), 0) / exercises.length;
-                });
+                return this.sessions.map(s => this._getSessionAccuracy(s));
             }
             
             getSessionDates() {
@@ -1411,10 +1448,14 @@
                     return stats.total / stats.count;
                 });
             }
+            
+            getUniqueExerciseCount() {
+                return this.getExerciseNames().length;
+            }
         }
 
         // ============================================
-        // RECOMMENDATION ENGINE
+        // RECOMMENDATION ENGINE - 12 RULES
         // ============================================
         class RecommendationEngine {
             constructor() {
@@ -1430,12 +1471,13 @@
                 const processor = data.processed ? data : new DataProcessor(data);
                 const sessions = processor.sessions;
                 const latestSession = processor.summary.latestSession;
+                const trend = processor.trends;
                 
                 // RULE 1: Accuracy Trend Analysis
-                const trend = processor.trends.accuracyTrend;
-                if (trend.length >= CONFIG.SESSION.TREND_WINDOW) {
-                    const improving = trend[trend.length - 1] > trend[trend.length - 2];
-                    const avgLast3 = trend.reduce((a, b) => a + b, 0) / trend.length;
+                if (trend.accuracyTrend.length >= CONFIG.SESSION.TREND_WINDOW) {
+                    const improving = trend.accuracyTrend[trend.accuracyTrend.length - 1] > 
+                                      trend.accuracyTrend[trend.accuracyTrend.length - 2];
+                    const avgLast3 = trend.accuracyTrend.reduce((a, b) => a + b, 0) / trend.accuracyTrend.length;
                     if (!improving && avgLast3 < CONFIG.ACCURACY.MEDIUM_THRESHOLD) {
                         recommendations.push({
                             title: 'Increase Training Frequency',
@@ -1446,7 +1488,7 @@
                     }
                 }
                 
-                // RULE 2: Exercise-Specific Performance
+                // RULE 2 & 3: Exercise-Specific Performance
                 for (const [name, stats] of Object.entries(processor.exercisePerformance)) {
                     const avg = stats.total / stats.count;
                     const avgFatigue = stats.fatigue / stats.count;
@@ -1467,6 +1509,7 @@
                         });
                     }
                     
+                    // RULE 4: Fatigue Management
                     if (avgFatigue > CONFIG.FATIGUE.HIGH_THRESHOLD) {
                         recommendations.push({
                             title: `Reduce Fatigue in ${name}`,
@@ -1477,7 +1520,7 @@
                     }
                 }
                 
-                // RULE 3: Latest Session Performance
+                // RULE 5 & 6: Latest Session Performance
                 if (latestSession) {
                     const latestExercises = latestSession.exercises || [];
                     if (latestExercises.length > 0) {
@@ -1504,7 +1547,7 @@
                     }
                 }
                 
-                // RULE 4: EMG Quality Check
+                // RULE 7: EMG Quality Alert
                 if (latestSession && latestSession.emg_quality_score < CONFIG.EMG.POOR_THRESHOLD) {
                     recommendations.push({
                         title: 'Check Sensor Placement',
@@ -1514,7 +1557,7 @@
                     });
                 }
                 
-                // RULE 5: Overall Progress Tracking
+                // RULE 8: Progress Tracking
                 const firstProgress = processor.summary.firstProgress;
                 const lastProgress = processor.summary.latestProgress;
                 const improvement = lastProgress - firstProgress;
@@ -1527,7 +1570,7 @@
                     });
                 }
                 
-                // RULE 6: Session Consistency Check
+                // RULE 9: Session Duration Consistency
                 if (sessions.length >= 3) {
                     const avgDuration = sessions.reduce((sum, s) => sum + (s.duration_minutes || 0), 0) / sessions.length;
                     const latestDuration = latestSession?.duration_minutes || 0;
@@ -1540,6 +1583,37 @@
                             icon: '⏱️'
                         });
                     }
+                }
+                
+                // RULE 10: Consecutive Improvement Streak
+                if (trend.consecutiveImprovements >= CONFIG.SESSION.CONSECUTIVE_IMPROVEMENTS) {
+                    recommendations.push({
+                        title: 'Great Momentum!',
+                        description: `You've shown ${trend.consecutiveImprovements} consecutive sessions of improvement. Keep up this excellent progress!`,
+                        priority: 'low',
+                        icon: '🚀'
+                    });
+                }
+                
+                // RULE 11: Session Gap Analysis
+                if (trend.lastGap > CONFIG.SESSION.MAX_DAYS_GAP && sessions.length > 1) {
+                    recommendations.push({
+                        title: 'Maintain Consistency',
+                        description: `It's been ${trend.lastGap} days since your last session. Regular practice is key for neuromuscular rehabilitation. Try to schedule sessions more frequently.`,
+                        priority: 'medium',
+                        icon: '📅'
+                    });
+                }
+                
+                // RULE 12: Exercise Variety
+                const exerciseCount = processor.getUniqueExerciseCount();
+                if (exerciseCount <= 2 && sessions.length >= 3) {
+                    recommendations.push({
+                        title: 'Add Exercise Variety',
+                        description: `You're only using ${exerciseCount} exercise type(s). Adding more variety can help build comprehensive neuromuscular control and prevent plateaus.`,
+                        priority: 'medium',
+                        icon: '🎯'
+                    });
                 }
                 
                 const priorityOrder = { high: 0, medium: 1, low: 2 };
@@ -1564,7 +1638,6 @@
                 this.recommendationEngine = new RecommendationEngine();
                 this.charts = [];
                 this.resizeTimeout = null;
-                this.selectedSessions = [];
             }
             
             renderAll(data) {
@@ -1574,7 +1647,6 @@
                 this.renderSessions(processor);
                 this.renderCharts(processor);
                 this.renderRecommendations(processor);
-                this.updateCompareCount();
             }
             
             renderSummary(processor) {
@@ -1613,10 +1685,8 @@
                     const month = dateObj.toLocaleString('default', { month: 'short' });
                     const day = dateObj.getDate();
                     
-                    const isSelected = this.selectedSessions.includes(index);
-                    
                     const div = document.createElement('div');
-                    div.className = `session-item ${isSelected ? 'comparing' : ''}`;
+                    div.className = 'session-item';
                     div.setAttribute('data-index', index);
                     
                     let headerHTML = `
@@ -1631,7 +1701,6 @@
                                 <span class="progress-badge" style="background: ${progressColor};">
                                     Progress: ${Math.round(session.overall_progress_percent)}%
                                 </span>
-                                <input type="checkbox" class="compare-checkbox" data-index="${index}" ${isSelected ? 'checked' : ''}>
                                 <button class="expand-btn" id="expandBtn${index}">
                                     <i class="fas fa-chevron-down"></i>
                                 </button>
@@ -1668,13 +1737,6 @@
                     
                     div.innerHTML = headerHTML + detailsHTML;
                     
-                    // Add event listeners
-                    const checkbox = div.querySelector('.compare-checkbox');
-                    checkbox.addEventListener('change', (e) => {
-                        e.stopPropagation();
-                        this.toggleSelection(index, checkbox.checked);
-                    });
-                    
                     const expandBtn = div.querySelector('.expand-btn');
                     expandBtn.addEventListener('click', (e) => {
                         e.stopPropagation();
@@ -1708,33 +1770,6 @@
                 }
             }
             
-            toggleSelection(index, checked) {
-                if (checked) {
-                    if (this.selectedSessions.length >= 2) {
-                        const first = this.selectedSessions[0];
-                        this.selectedSessions = [first, index];
-                    } else {
-                        this.selectedSessions.push(index);
-                    }
-                } else {
-                    this.selectedSessions = this.selectedSessions.filter(i => i !== index);
-                }
-                this.updateCompareCount();
-                this.renderSessions(this.processor);
-            }
-            
-            updateCompareCount() {
-                const count = this.selectedSessions.length;
-                const badge = DOM.get('compareCount');
-                if (badge) badge.textContent = count;
-                const btn = DOM.get('compareBtn');
-                if (count === 2) {
-                    btn.classList.add('active');
-                } else {
-                    btn.classList.remove('active');
-                }
-            }
-            
             renderCharts(processor) {
                 this.charts.forEach(chart => chart.destroy());
                 this.charts = [];
@@ -1751,7 +1786,7 @@
                 const colors = CONFIG.CHART.COLORS;
                 const fatigueColors = CONFIG.CHART.FATIGUE_COLORS;
                 
-                // 1. Progress Chart
+                // Progress Chart - animation: false
                 this.charts.push(new Chart(DOM.get('progressChart'), {
                     type: 'line',
                     data: {
@@ -1772,6 +1807,7 @@
                     },
                     options: {
                         responsive: true,
+                        animation: false,
                         plugins: { 
                             legend: { 
                                 position: 'top',
@@ -1790,7 +1826,7 @@
                     }
                 }));
                 
-                // 2. Exercise Breakdown Chart
+                // Exercise Chart - animation: false
                 this.charts.push(new Chart(DOM.get('exerciseChart'), {
                     type: 'bar',
                     data: {
@@ -1805,6 +1841,7 @@
                     },
                     options: {
                         responsive: true,
+                        animation: false,
                         plugins: { legend: { display: false } },
                         scales: { 
                             y: { 
@@ -1818,7 +1855,7 @@
                     }
                 }));
                 
-                // 3. Fatigue Chart
+                // Fatigue Chart - animation: false
                 if (exerciseNames.length > 0) {
                     const fatigueData = exerciseNames.map(name => {
                         return processor.sessions.map(session => {
@@ -1857,6 +1894,7 @@
                         },
                         options: {
                             responsive: true,
+                            animation: false,
                             plugins: { 
                                 legend: { 
                                     position: 'top',
@@ -1904,7 +1942,7 @@
             }
             
             renderRecommendations(processor) {
-                const recommendations = this.recommendationEngine.generate(processor.raw);
+                const recommendations = this.recommendationEngine.generate(processor);
                 const container = DOM.get('recommendationsContainer');
                 
                 if (recommendations.length === 0) {
@@ -1936,16 +1974,72 @@
             // ============================================
             showComparison() {
                 const modal = DOM.get('comparisonModal');
-                const body = DOM.get('comparisonBody');
+                const selectView = DOM.get('comparisonSelectView');
+                const resultView = DOM.get('comparisonResult');
                 
-                if (this.selectedSessions.length !== 2) {
-                    body.innerHTML = '<p style="text-align: center; color: var(--text-muted);">Please select exactly 2 sessions to compare.</p>';
-                    modal.classList.add('open');
-                    return;
-                }
+                selectView.classList.remove('hidden');
+                resultView.classList.remove('active');
                 
-                const s1 = this.processor.sessions[this.selectedSessions[0]];
-                const s2 = this.processor.sessions[this.selectedSessions[1]];
+                this.populateComparisonList();
+                modal.classList.add('open');
+            }
+            
+            populateComparisonList() {
+                const list = DOM.get('comparisonSessionList');
+                const sessions = this.processor.sessions;
+                
+                list.innerHTML = sessions.map((session, index) => {
+                    const dateObj = new Date(session.date);
+                    const month = dateObj.toLocaleString('default', { month: 'short' });
+                    const day = dateObj.getDate();
+                    const exercises = session.exercises || [];
+                    const avgAcc = exercises.length > 0 ? 
+                        exercises.reduce((sum, e) => sum + (e.accuracy_percent || 0), 0) / exercises.length : 0;
+                    
+                    return `
+                        <div class="comparison-session-item" data-index="${index}">
+                            <span class="session-number">#${session.session_id}</span>
+                            <div class="session-info">
+                                <span><span class="label">Date:</span> <span class="value">${month} ${day}</span></span>
+                                <span><span class="label">Duration:</span> <span class="value">${session.duration_minutes}m</span></span>
+                                <span><span class="label">Accuracy:</span> <span class="value">${Math.round(avgAcc)}%</span></span>
+                                <span><span class="label">Progress:</span> <span class="value">${Math.round(session.overall_progress_percent)}%</span></span>
+                            </div>
+                            <span class="check-mark">✓</span>
+                        </div>
+                    `;
+                }).join('');
+                
+                list.querySelectorAll('.comparison-session-item').forEach(item => {
+                    item.addEventListener('click', () => {
+                        const isSelected = item.classList.contains('selected');
+                        const selectedItems = list.querySelectorAll('.selected');
+                        
+                        if (isSelected) {
+                            item.classList.remove('selected');
+                        } else if (selectedItems.length < 2) {
+                            item.classList.add('selected');
+                        } else {
+                            selectedItems[0].classList.remove('selected');
+                            item.classList.add('selected');
+                        }
+                        
+                        const selected = list.querySelectorAll('.selected');
+                        const compareBtn = DOM.get('comparisonCompareBtn');
+                        compareBtn.disabled = selected.length !== 2;
+                    });
+                });
+            }
+            
+            performComparison() {
+                const list = DOM.get('comparisonSessionList');
+                const selectedItems = list.querySelectorAll('.selected');
+                
+                if (selectedItems.length !== 2) return;
+                
+                const indices = Array.from(selectedItems).map(el => parseInt(el.dataset.index));
+                const s1 = this.processor.sessions[indices[0]];
+                const s2 = this.processor.sessions[indices[1]];
                 
                 const getSessionData = (session) => {
                     const exercises = session.exercises || [];
@@ -1958,6 +2052,62 @@
                 
                 const d1 = getSessionData(s1);
                 const d2 = getSessionData(s2);
+                
+                DOM.get('comparisonSelectView').classList.add('hidden');
+                const resultView = DOM.get('comparisonResult');
+                resultView.classList.add('active');
+                
+                const body = DOM.get('comparisonBody');
+                
+                const conclusions = [];
+                
+                if (d1.avgAcc > d2.avgAcc + 5) {
+                    conclusions.push(`Session ${s1.session_id} had <span class="highlight-green">${Math.round(d1.avgAcc - d2.avgAcc)}% higher accuracy</span> than Session ${s2.session_id}`);
+                } else if (d2.avgAcc > d1.avgAcc + 5) {
+                    conclusions.push(`Session ${s2.session_id} had <span class="highlight-green">${Math.round(d2.avgAcc - d1.avgAcc)}% higher accuracy</span> than Session ${s1.session_id}`);
+                } else {
+                    conclusions.push(`Both sessions had <span class="highlight-blue">similar accuracy</span> (within 5% of each other)`);
+                }
+                
+                if (d1.avgFatigue > d2.avgFatigue + 0.15) {
+                    conclusions.push(`Session ${s1.session_id} had <span class="highlight-red">higher fatigue</span> (${(d1.avgFatigue * 100).toFixed(0)}% vs ${(d2.avgFatigue * 100).toFixed(0)}%)`);
+                } else if (d2.avgFatigue > d1.avgFatigue + 0.15) {
+                    conclusions.push(`Session ${s2.session_id} had <span class="highlight-red">higher fatigue</span> (${(d2.avgFatigue * 100).toFixed(0)}% vs ${(d1.avgFatigue * 100).toFixed(0)}%)`);
+                } else {
+                    conclusions.push(`Both sessions had <span class="highlight-blue">similar fatigue levels</span>`);
+                }
+                
+                if (s1.duration_minutes > s2.duration_minutes + 5) {
+                    conclusions.push(`Session ${s1.session_id} was <span class="highlight-green">${s1.duration_minutes - s2.duration_minutes}min longer</span> than Session ${s2.session_id}`);
+                } else if (s2.duration_minutes > s1.duration_minutes + 5) {
+                    conclusions.push(`Session ${s2.session_id} was <span class="highlight-green">${s2.duration_minutes - s1.duration_minutes}min longer</span> than Session ${s1.session_id}`);
+                } else {
+                    conclusions.push(`Both sessions had <span class="highlight-blue">similar duration</span>`);
+                }
+                
+                if (s1.emg_quality_score > s2.emg_quality_score + 0.1) {
+                    conclusions.push(`Session ${s1.session_id} had <span class="highlight-green">better EMG signal quality</span> (${Math.round(s1.emg_quality_score * 100)}% vs ${Math.round(s2.emg_quality_score * 100)}%)`);
+                } else if (s2.emg_quality_score > s1.emg_quality_score + 0.1) {
+                    conclusions.push(`Session ${s2.session_id} had <span class="highlight-green">better EMG signal quality</span> (${Math.round(s2.emg_quality_score * 100)}% vs ${Math.round(s1.emg_quality_score * 100)}%)`);
+                } else {
+                    conclusions.push(`Both sessions had <span class="highlight-blue">similar EMG quality</span>`);
+                }
+                
+                if (s1.overall_progress_percent > s2.overall_progress_percent + 5) {
+                    conclusions.push(`Session ${s1.session_id} showed <span class="highlight-green">higher overall progress</span> (${Math.round(s1.overall_progress_percent)}% vs ${Math.round(s2.overall_progress_percent)}%)`);
+                } else if (s2.overall_progress_percent > s1.overall_progress_percent + 5) {
+                    conclusions.push(`Session ${s2.session_id} showed <span class="highlight-green">higher overall progress</span> (${Math.round(s2.overall_progress_percent)}% vs ${Math.round(s1.overall_progress_percent)}%)`);
+                } else {
+                    conclusions.push(`Both sessions showed <span class="highlight-blue">similar overall progress</span>`);
+                }
+                
+                if (d1.exercises.length > d2.exercises.length) {
+                    conclusions.push(`Session ${s1.session_id} included <span class="highlight-green">${d1.exercises.length - d2.exercises.length} more exercises</span> than Session ${s2.session_id}`);
+                } else if (d2.exercises.length > d1.exercises.length) {
+                    conclusions.push(`Session ${s2.session_id} included <span class="highlight-green">${d2.exercises.length - d1.exercises.length} more exercises</span> than Session ${s1.session_id}`);
+                } else {
+                    conclusions.push(`Both sessions included <span class="highlight-blue">the same number of exercises</span> (${d1.exercises.length})`);
+                }
                 
                 body.innerHTML = `
                     <div class="comparison-grid">
@@ -2016,18 +2166,17 @@
                             </div>
                         </div>
                     </div>
-                    <div style="text-align: center; margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border-color);">
-                        <span style="font-size: 14px; color: var(--text-muted);">
-                            ${d1.avgAcc > d2.avgAcc ? '📈 Session 1 had higher accuracy' : d1.avgAcc < d2.avgAcc ? '📈 Session 2 had higher accuracy' : '📊 Both sessions had similar accuracy'}
-                        </span>
+                    <div class="comparison-conclusion">
+                        <h4><i class="fas fa-clipboard-list" style="color: var(--clinical-blue);"></i> Key Conclusions</h4>
+                        <ul>
+                            ${conclusions.map(c => `<li><span class="bullet">•</span> ${c}</li>`).join('')}
+                        </ul>
                     </div>
                 `;
-                
-                modal.classList.add('open');
             }
             
             // ============================================
-            // EXPORT PDF
+            // EXPORT PDF - SIMPLIFIED & FIXED
             // ============================================
             async exportPDF() {
                 const btn = DOM.get('exportBtn');
@@ -2036,102 +2185,45 @@
                 
                 try {
                     const dashboard = document.querySelector('.dashboard');
+                    
+                    // Small delay to ensure everything is rendered
+                    await new Promise(resolve => setTimeout(resolve, 300));
+                    
                     const canvas = await html2canvas(dashboard, {
                         scale: 2,
                         backgroundColor: '#FFFFFF',
                         useCORS: true,
                         logging: false,
+                        allowTaint: true,
+                        width: dashboard.scrollWidth,
+                        height: dashboard.scrollHeight,
+                        windowWidth: dashboard.scrollWidth,
+                        windowHeight: dashboard.scrollHeight,
                     });
                     
-                    const imgData = canvas.toDataURL('image/png');
+                    const imgData = canvas.toDataURL('image/png', 1.0);
                     const { jsPDF } = window.jspdf;
                     const pdf = new jsPDF('p', 'mm', 'a4');
                     const pdfWidth = pdf.internal.pageSize.getWidth();
                     const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
                     
-                    pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+                    pdf.setFontSize(16);
+                    pdf.setTextColor('#005EB8');
+                    pdf.text('ACTIVAI Rehabilitation Report', pdfWidth / 2, 20, { align: 'center' });
+                    pdf.setFontSize(10);
+                    pdf.setTextColor('#64748B');
+                    pdf.text(`Generated: ${new Date().toLocaleString()}`, pdfWidth / 2, 28, { align: 'center' });
+                    
+                    pdf.addImage(imgData, 'PNG', 0, 35, pdfWidth, pdfHeight - 35);
                     pdf.save('ACTIVAI_Rehabilitation_Report.pdf');
                     
                 } catch (error) {
                     console.error('Export failed:', error);
-                    alert('Failed to export PDF. Please try again.');
+                    alert('Failed to export PDF. Please try again. Error: ' + error.message);
                 }
                 
                 btn.innerHTML = '<i class="fas fa-file-pdf"></i> Export';
                 btn.disabled = false;
-            }
-            
-            // ============================================
-            // REAL-TIME SIMULATION
-            // ============================================
-            startSimulation() {
-                const btn = DOM.get('simulateBtn');
-                const indicator = DOM.get('liveIndicator');
-                const isRunning = btn.classList.contains('active');
-                
-                if (isRunning) {
-                    btn.classList.remove('active');
-                    btn.innerHTML = '<i class="fas fa-play"></i> Simulate';
-                    indicator.classList.remove('active');
-                    if (this.simulationInterval) {
-                        clearInterval(this.simulationInterval);
-                        this.simulationInterval = null;
-                    }
-                    return;
-                }
-                
-                btn.classList.add('active');
-                btn.innerHTML = '<i class="fas fa-stop"></i> Stop';
-                indicator.classList.add('active');
-                
-                let counter = 0;
-                const originalData = this.processor.raw;
-                
-                this.simulationInterval = setInterval(() => {
-                    counter++;
-                    const newSession = {
-                        session_id: originalData.sessions.length + counter,
-                        date: new Date().toISOString().split('T')[0],
-                        duration_minutes: 25 + Math.floor(Math.random() * 20),
-                        emg_quality_score: 0.7 + Math.random() * 0.25,
-                        overall_progress_percent: Math.min(100, 50 + counter * 2 + Math.random() * 5),
-                        exercises: [
-                            {
-                                name: 'Power Grip Training',
-                                repetitions: 15 + Math.floor(Math.random() * 10),
-                                accuracy_percent: 70 + Math.random() * 20,
-                                avg_response_time_ms: 250 + Math.random() * 100,
-                                fatigue_index: 0.2 + Math.random() * 0.4
-                            },
-                            {
-                                name: 'Pinch Control',
-                                repetitions: 12 + Math.floor(Math.random() * 8),
-                                accuracy_percent: 65 + Math.random() * 20,
-                                avg_response_time_ms: 300 + Math.random() * 150,
-                                fatigue_index: 0.3 + Math.random() * 0.4
-                            },
-                            {
-                                name: 'Lateral Grip',
-                                repetitions: 10 + Math.floor(Math.random() * 8),
-                                accuracy_percent: 60 + Math.random() * 20,
-                                avg_response_time_ms: 350 + Math.random() * 150,
-                                fatigue_index: 0.3 + Math.random() * 0.4
-                            }
-                        ]
-                    };
-                    
-                    const updatedData = JSON.parse(JSON.stringify(originalData));
-                    updatedData.sessions.push(newSession);
-                    
-                    this.renderAll(updatedData);
-                    
-                    // Auto-scroll to show new session
-                    const container = DOM.get('sessionsContainer');
-                    if (container.firstChild) {
-                        container.firstChild.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    }
-                    
-                }, 3000);
             }
             
             destroy() {
@@ -2141,19 +2233,6 @@
                     clearTimeout(this.resizeTimeout);
                     this.resizeTimeout = null;
                 }
-                if (this.simulationInterval) {
-                    clearInterval(this.simulationInterval);
-                    this.simulationInterval = null;
-                }
-            }
-        }
-
-        // ============================================
-        // GLOBAL FUNCTIONS
-        // ============================================
-        function toggleSession(index) {
-            if (window.__app) {
-                window.__app.renderer.toggleSession(index);
             }
         }
 
@@ -2215,17 +2294,13 @@
                 if (data) {
                     this.renderer.renderAll(data);
                     this.initialized = true;
-                    
-                    // Setup event listeners
                     this.setupEventListeners();
                 }
             }
             
             setupEventListeners() {
-                // Theme toggle
                 DOM.get('themeToggle').addEventListener('click', () => this.toggleTheme());
                 
-                // Comparison
                 DOM.get('compareBtn').addEventListener('click', () => {
                     this.renderer.showComparison();
                 });
@@ -2234,20 +2309,32 @@
                     DOM.get('comparisonModal').classList.remove('open');
                 });
                 
+                DOM.get('comparisonCancel').addEventListener('click', () => {
+                    DOM.get('comparisonModal').classList.remove('open');
+                });
+                
+                DOM.get('comparisonCloseResult').addEventListener('click', () => {
+                    DOM.get('comparisonModal').classList.remove('open');
+                });
+                
+                DOM.get('comparisonBackBtn').addEventListener('click', () => {
+                    DOM.get('comparisonSelectView').classList.remove('hidden');
+                    DOM.get('comparisonResult').classList.remove('active');
+                    this.renderer.populateComparisonList();
+                });
+                
                 DOM.get('comparisonModal').addEventListener('click', (e) => {
                     if (e.target === DOM.get('comparisonModal')) {
                         DOM.get('comparisonModal').classList.remove('open');
                     }
                 });
                 
-                // Export PDF
-                DOM.get('exportBtn').addEventListener('click', () => {
-                    this.renderer.exportPDF();
+                DOM.get('comparisonCompareBtn').addEventListener('click', () => {
+                    this.renderer.performComparison();
                 });
                 
-                // Simulation
-                DOM.get('simulateBtn').addEventListener('click', () => {
-                    this.renderer.startSimulation();
+                DOM.get('exportBtn').addEventListener('click', () => {
+                    this.renderer.exportPDF();
                 });
             }
             
